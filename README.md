@@ -15,6 +15,10 @@ For Debian or Ubuntu users.
 sudo apt-get install xfce4-panel-dev libgtk2.0-dev
 ```
 
+## Build and install
+
+Run `./build.sh` in your terminal.
+
 ---
 
 # License
