@@ -1,7 +1,7 @@
 #include <gtk/gtk.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 
-#include "config.h"
+#include "settings.h"
 #include "sysmonitor.h"
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
