@@ -17,7 +17,23 @@ sudo apt-get install xfce4-panel-dev libgtk2.0-dev
 
 ## Build and install
 
-Run `./build.sh` in your terminal.
+- build **release** version, run:
+
+```
+make
+```
+
+- build **debug** release, run:
+
+```
+make debug
+```
+
+- install panel plugin, run:
+
+```
+make install
+```
 
 ---
 
