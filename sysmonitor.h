@@ -6,9 +6,16 @@
 
 typedef struct {
         XfcePanelPlugin *plugin;
-        GtkWidget *ebox;
-        GtkWidget *hvbox;
+        GtkWidget       *ebox;
+        GtkWidget       *hvbox;
+        GtkWidget       *show_label;
+        char    *font;
 } sys_monitor_t;
 
+
+#define MAX_FONT_STR_LEN        128
+
+//#define DEFAULT_FONT            "(default)"
+#define DEFAULT_FONT            "Sans 5"
 
 #endif
