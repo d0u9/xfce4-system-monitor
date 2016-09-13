@@ -8,7 +8,7 @@ SRCS = $(wildcard *.c)
 OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS = $(OBJS:%.o=%.d)
 
-CFLAGS += -Wall -fPIC $(DEBUG_FLAGS) -I.
+CFLAGS += -Wall -fPIC $(DEBUG_FLAGS) -std=c99 -I.
 EXTRA_CFLAGS = `pkg-config --cflags libxfce4panel-1.0`
 EXTRA_LDFLAGS = `pkg-config --libs libxfce4panel-1.0`
 
