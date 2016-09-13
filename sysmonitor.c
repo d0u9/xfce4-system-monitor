@@ -3,11 +3,11 @@
 #include <string.h>
 
 #include "settings.h"
+#include "dialogs.h"
 #include "sysmonitor.h"
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin);
-static void menu_about(XfcePanelPlugin *plugin);
 static void genmon_free(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
 static int alloc_memory(sys_monitor_t *base);
@@ -93,30 +93,6 @@ error:
         for (int i = 0; i < count - 1; ++i)
                 free(p[i]);
         return -1;
-}
-
-
-static void menu_about(XfcePanelPlugin *plugin)
-{
-        GdkPixbuf *icon;
-        const gchar *auth[] = {AUTHOR1, NULL};
-
-        icon = xfce_panel_pixbuf_from_source("gnome-fs-executable", NULL, 48);
-        gtk_show_about_dialog(NULL,
-                        "logo", icon,
-                        "wrap_license", TRUE,
-                        "license", TEXT_LICENSE,
-                        "version", TEXT_VERSION,
-                        "program-name", TEXT_PROGRAM_NAME,
-                        "comments", TEXT_COMMENT,
-                        "website", TEXT_WEBSITE,
-                        "copyright", TEXT_COPYRIGHT,
-                        "authors", auth,
-                        NULL);
-
-        if(icon)
-                g_object_unref(G_OBJECT(icon));
-
 }
 
 
