@@ -1,21 +1,18 @@
-#ifndef __CONFIG_H
-#define __CONFIG_H
-
-
-#define VERSION_MAJOR           0
-#define VERSION_MINOR           1
-
-#define TEXT_VERSION            TOSTRING(VERSION_MAJOR) "." TOSTRING(VERSION_MINOR)
-
-#define TEXT_PROGRAM_NAME       "xfce4-system-monitor-plugin"
-#define TEXT_WEBSITE            "https://www.github.com/d0u9/xfce4-system-monitor"
-
-#define TEXT_COMMENT            "Monitor CPU usage, link speed, CPU temperature, etc."
-#define TEXT_COPYRIGHT          "Copyright (c) 2016-2016\n"
-
-#define AUTHOR1                 "Douglas Su, <d0u9.su@outlook.com>"
-
-#define TEXT_LICENSE            "This program is licensed under a Creative Commons"     \
+define(ABRV_NAME, `System Monitor')dnl
+define(FULL_NAME, `xfce4-system-monitor-plugin')dnl
+define(COMMENT, `Monitor CPU usage, link speed, CPU temperature, etc.')dnl
+define(ICON, `gnome-fs-executable')dnl
+define(MODULE_NAME, `sysmonitor')dnl
+dnl
+define(VERSION_MAJOR, `0')dnl
+define(VERSION_MINOR, `1')dnl
+define(WEB_SITE, `https://www.github.com/d0u9/xfce4-system-monitor')dnl
+define(COPYRIGHT, `Copyright (c) 2016-2016\n')dnl
+dnl
+define(AUTHOR1, `Douglas Su, <d0u9.su@outlook.com>')dnl
+dnl
+define(LICENSE, `\
+                                "This program is licensed under a Creative Commons"     \
                                 "Attribution-ShareAlike 4.0 International License.\n"   \
                                 "\n"                                                    \
                                 "You are free to:\n"                                    \
@@ -26,13 +23,5 @@
                                 "\n"                                                    \
                                 "For more details about the license, please check: "    \
                                 "https://creativecommons.org/licenses/by-sa/4.0/\n"     \
-                                "\n"
-
-
-/* auxiliary macros */
-#define STRINGFY(x)     #x
-#define TOSTRING(x)     STRINGFY(x)
-
-
-#endif
-
+                                "\n"'
+      )dnl

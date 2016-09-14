@@ -1,21 +1,28 @@
 CC = gcc
+M4 = m4
+
 PROGRAM_NAME = sysmonitor
 BIN = $(PROGRAM_NAME)
 LIB = lib$(BIN).so
 BUILD_DIR = build
+M4_SCRIPT = configure.m4
+
+.SUFFIXES: .h.in .h
 
 SRCS = $(wildcard *.c)
 OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS = $(OBJS:%.o=%.d)
+HINS = $(wildcard *.h.in)
+HADS = $(HINS:%.h.in=$(BUILD_DIR)/%.h)
 
-CFLAGS += -Wall -fPIC $(DEBUG_FLAGS) -std=c99 -I.
+CFLAGS += -Wall -fPIC $(DEBUG_FLAGS) -std=c99 -I. -I$(BUILD_DIR)
 EXTRA_CFLAGS = `pkg-config --cflags libxfce4panel-1.0`
 EXTRA_LDFLAGS = `pkg-config --libs libxfce4panel-1.0`
 
 release: DEBUG_FLAGS = -O2
 release: build
 
-build: _pre $(BIN)
+build: _PRE $(HADS) $(BIN)
 
 $(BIN): $(OBJS)
 	$(CC) $(DEBUG_FLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) -shared -o $(BUILD_DIR)/$(LIB) $^
@@ -24,6 +31,10 @@ $(BIN): $(OBJS)
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(DEBUG_FLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) -MMD -c -o $@ $<
+
+$(BUILD_DIR)/%.h: %.h.in
+	$(M4) $(M4_SCRIPT) $^ > $@
+
 
 .PHONY: debug all install clean _pre
 
@@ -39,6 +50,6 @@ install:
 	cp $(BUILD_DIR)/$(LIB) /usr/lib/xfce4/panel-plugins
 	cp $(PROGRAM_NAME).desktop /usr/share/xfce4/panel-plugins
 
-_pre:
-	@mkdir -p $(BUILD_DIR)
+_PRE:
+	@test -d $(@D)/$(BUILD_DIR) || (mkdir -p $(@D)/$(BUILD_DIR) && echo "mkdir $(@D)/$(BUILD_DIR)";)
 

@@ -1,0 +1,8 @@
+[Xfce Panel]
+`Type'=X-XFCE-PanelPlugin
+`Encoding'=UTF-8
+`Name'=ABRV_NAME
+`Comment'=COMMENT
+`Icon'=ICON
+`X-XFCE-Module'=MODULE_NAME
+`X-XFCE-Module-Path'=/usr/lib/xfce4/panel-plugins
