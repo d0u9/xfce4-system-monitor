@@ -10,7 +10,7 @@ static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin);
 static void genmon_free(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
-static int alloc_memory(sys_monitor_t *base);
+static sys_monitor_t *alloc_memory(void);
 static gboolean sample_size_changed(XfcePanelPlugin *plugin, gint size);
 static sys_monitor_t * init_gui(XfcePanelPlugin *plugin);
 
@@ -48,7 +48,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
         GtkWidget       *ebox, *hvbox;
         sys_monitor_t   *base = NULL;
 
-        alloc_memory(base);
+        base = alloc_memory();
         base->plugin = plugin;
 
         ebox = gtk_event_box_new();
@@ -76,10 +76,11 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
 }
 
 
-static int alloc_memory(sys_monitor_t *base)
+static sys_monitor_t *alloc_memory(void)
 {
         void *p[5] = {NULL};
         int count = 0;
+        sys_monitor_t *base = NULL;
 
         base = p[count++] = calloc(1, sizeof(sys_monitor_t));
         if (!base) goto error;
@@ -87,12 +88,12 @@ static int alloc_memory(sys_monitor_t *base)
         base->font = p[count++] = calloc(MAX_FONT_STR_LEN, 1);
         if (!base->font) goto error;
 
-        return 0;
+        return base;
 
 error:
         for (int i = 0; i < count - 1; ++i)
                 free(p[i]);
-        return -1;
+        return NULL;
 }
 
 
