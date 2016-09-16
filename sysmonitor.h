@@ -16,6 +16,7 @@ typedef struct {
 #define MAX_FONT_STR_LEN        128
 
 //#define DEFAULT_FONT            "(default)"
-#define DEFAULT_FONT            "Sans 5"
+#define DEFAULT_FONT            "Sans 6"
+
 
 #endif
