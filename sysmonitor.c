@@ -113,7 +113,7 @@ static void genmon_free(XfcePanelPlugin *plugin, sys_monitor_t *base)
 }
 
 
-static int set_font(sys_monitor_t *sys_monitor, const char *font_name)
+static int set_font(sys_monitor_t *sys_monitor, GtkWidget *widget, const char *font_name)
 {
         sys_monitor_t *base = sys_monitor;
         PangoFontDescription *t_font = NULL;
@@ -125,7 +125,7 @@ static int set_font(sys_monitor_t *sys_monitor, const char *font_name)
         if (!t_font)
                 return -1;
 
-        gtk_widget_modify_font(GTK_WIDGET(base->show_label), t_font);
+        gtk_widget_modify_font(GTK_WIDGET(widget), t_font);
         pango_font_description_free(t_font);
 
         return 0;
