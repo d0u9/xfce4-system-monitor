@@ -8,7 +8,11 @@ typedef struct {
         XfcePanelPlugin *plugin;
         GtkWidget       *ebox;
         GtkWidget       *hvbox;
-        GtkWidget       *show_label;
+        GtkWidget       *layout_table;
+        GtkWidget       *uplink_speed_label;
+        GtkWidget       *dowlink_speed_label;
+        GtkWidget       *cpu_usage_label;
+        GtkWidget       *cpu_sensor_label;
         char    *font;
 } sys_monitor_t;
 
@@ -18,5 +22,9 @@ typedef struct {
 //#define DEFAULT_FONT            "(default)"
 #define DEFAULT_FONT            "Sans 6"
 
+#define MAX_UPLINK_SPEED_LABEL_WIDTH    12
+#define MAX_DOWNLINK_SPEED_LABEL_WIDTH  12
+#define MAX_CPU_USAGE_LABEL_WIDTH       6
+#define MAX_CPU_SENSOR_LABEL_WIDTH      6
 
 #endif

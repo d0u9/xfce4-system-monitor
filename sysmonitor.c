@@ -9,7 +9,7 @@
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin);
 static void genmon_free(XfcePanelPlugin *plugin, sys_monitor_t *base);
-static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
+static int set_font(sys_monitor_t *sys_monitor, GtkWidget *widget, const char *font_name);
 static sys_monitor_t *alloc_memory(void);
 static gboolean sample_size_changed(XfcePanelPlugin *plugin, gint size);
 static sys_monitor_t * init_gui(XfcePanelPlugin *plugin);
@@ -46,6 +46,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
 {
         GtkOrientation  orientation;
         GtkWidget       *ebox, *hvbox;
+        GtkWidget       *layout_table;
         sys_monitor_t   *base = NULL;
 
         base = alloc_memory();
@@ -61,16 +62,46 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
         hvbox = xfce_hvbox_new(orientation, FALSE, 0);
         gtk_widget_show(hvbox);
         gtk_container_add(GTK_CONTAINER(ebox), hvbox);
-        gtk_container_set_border_width(GTK_CONTAINER(hvbox), 0);
+        gtk_container_set_border_width(GTK_CONTAINER(hvbox), 3);
         base->hvbox = hvbox;
 
-        GtkWidget *show_label = gtk_label_new("Hello World!");
-        gtk_widget_show(show_label);
-        gtk_box_pack_start(GTK_BOX(hvbox), show_label, FALSE, FALSE, 0);
-        base->show_label = show_label;
+        layout_table = gtk_table_new (3, 2, TRUE);
+        gtk_widget_show (layout_table);
+        gtk_table_set_col_spacing (GTK_TABLE(layout_table), 0, 6);
+        gtk_container_add (GTK_CONTAINER(hvbox), layout_table);
+        gtk_box_pack_start(GTK_BOX(hvbox), layout_table, FALSE, FALSE, 0);
+        base->layout_table = layout_table;
+
+        GtkWidget *uplink_speed_label = gtk_label_new("900 MB/s U");
+        gtk_widget_show(uplink_speed_label);
+        set_font(base, uplink_speed_label, DEFAULT_FONT);
+        gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label), MAX_UPLINK_SPEED_LABEL_WIDTH);
+        gtk_table_attach_defaults(GTK_TABLE(layout_table), uplink_speed_label, 0, 2, 0, 1);
+        base->uplink_speed_label = uplink_speed_label;
+
+        GtkWidget *downlink_speed_label = gtk_label_new("812 MB/s D");
+        gtk_widget_show(downlink_speed_label);
+        set_font(base, downlink_speed_label, DEFAULT_FONT);
+        gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label), MAX_DOWNLINK_SPEED_LABEL_WIDTH);
+        gtk_table_attach_defaults(GTK_TABLE(layout_table), downlink_speed_label, 0, 2, 1, 2);
+        base->dowlink_speed_label = downlink_speed_label;
+
+        GtkWidget *cpu_usage_label = gtk_label_new("60.6%");
+        gtk_widget_show(cpu_usage_label);
+        set_font(base, cpu_usage_label, DEFAULT_FONT);
+        gtk_label_set_width_chars(GTK_LABEL(cpu_usage_label), MAX_CPU_USAGE_LABEL_WIDTH);
+        gtk_table_attach_defaults(GTK_TABLE(layout_table), cpu_usage_label, 0, 1, 2, 3);
+        base->cpu_usage_label = cpu_usage_label;
+
+        GtkWidget *cpu_sensor_label = gtk_label_new("52 oC");
+        gtk_widget_show(cpu_sensor_label);
+        set_font(base, cpu_sensor_label, DEFAULT_FONT);
+        gtk_label_set_width_chars(GTK_LABEL(cpu_sensor_label), MAX_CPU_SENSOR_LABEL_WIDTH);
+        gtk_table_attach_defaults(GTK_TABLE(layout_table), cpu_sensor_label, 1, 2, 2, 3);
+        base->cpu_sensor_label = cpu_sensor_label;
+
 
         init_menu(plugin);
-        set_font(base, DEFAULT_FONT);
 
         return base;
 }
