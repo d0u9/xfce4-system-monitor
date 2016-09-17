@@ -1,6 +1,7 @@
 #include "event_handler.h"
 
 gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size);
+gboolean timeout(sys_monitor_t *base);
 void system_monitor_free(XfcePanelPlugin *plugin, sys_monitor_t *base);
 
 
@@ -17,10 +18,16 @@ gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size)
 }
 
 
+gboolean timeout(sys_monitor_t *base)
+{
+        g_print("Timeout !!!\n");
+
+        return TRUE;
+}
+
+
 void system_monitor_free(XfcePanelPlugin *plugin, sys_monitor_t *base)
 {
         free(base->font);
         free(base);
 }
-
-

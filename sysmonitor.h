@@ -16,6 +16,8 @@ typedef struct {
         GtkWidget       *ebox;
         GtkWidget       *hvbox;
         GtkWidget       *layout_table;
+        guint           timer_id;
+        guint           update_interval;
         gui_t           gui;
         char    *font;
 } sys_monitor_t;
