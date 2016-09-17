@@ -58,6 +58,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
         init_menu(plugin);
 
         set_update_rate(base, 1);
+        get_cpu_data(&base->cpu);
 
         return base;
 }
@@ -119,6 +120,9 @@ static sys_monitor_t *alloc_memory(void)
 
         base->font = p[count++] = calloc(MAX_FONT_STR_LEN, 1);
         if (!base->font) goto error;
+
+        if (alloc_cpu_data(&base->cpu) < 0)
+                goto error;
 
         return base;
 

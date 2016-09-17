@@ -28,6 +28,7 @@ gboolean timeout(sys_monitor_t *base)
 
 void system_monitor_free(XfcePanelPlugin *plugin, sys_monitor_t *base)
 {
+        free_cpu_data(&base->cpu);
         free(base->font);
         free(base);
 }

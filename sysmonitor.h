@@ -1,8 +1,9 @@
 #ifndef __SYSMONITOR_H
 #define __SYSMONITOR_H
 
-
 #include <libxfce4panel/xfce-panel-plugin.h>
+
+#include "cpu.h"
 
 typedef struct {
         GtkWidget       *uplink_speed_label;
@@ -19,11 +20,13 @@ typedef struct {
         guint           timer_id;
         guint           update_interval;
         gui_t           gui;
+        cpu_t           cpu;
         char    *font;
 } sys_monitor_t;
 
 
 #define MAX_FONT_STR_LEN        128
+#define MAX_FILE_LINE_LEN       256
 
 //#define DEFAULT_FONT            "(default)"
 #define DEFAULT_FONT            "Sans 6"
