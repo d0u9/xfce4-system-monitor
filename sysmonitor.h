@@ -5,14 +5,18 @@
 #include <libxfce4panel/xfce-panel-plugin.h>
 
 typedef struct {
-        XfcePanelPlugin *plugin;
-        GtkWidget       *ebox;
-        GtkWidget       *hvbox;
-        GtkWidget       *layout_table;
         GtkWidget       *uplink_speed_label;
         GtkWidget       *dowlink_speed_label;
         GtkWidget       *cpu_usage_label;
         GtkWidget       *cpu_sensor_label;
+} gui_t;
+
+typedef struct {
+        XfcePanelPlugin *plugin;
+        GtkWidget       *ebox;
+        GtkWidget       *hvbox;
+        GtkWidget       *layout_table;
+        gui_t           gui;
         char    *font;
 } sys_monitor_t;
 
