@@ -4,14 +4,13 @@
 
 #include "settings.h"
 #include "dialogs.h"
+#include "event_handler.h"
 #include "sysmonitor.h"
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin);
 static void create_layout(sys_monitor_t *base);
-static void genmon_free(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
-static gboolean sample_size_changed(XfcePanelPlugin *plugin, gint size);
 static sys_monitor_t *alloc_memory(void);
 static sys_monitor_t *init_gui(XfcePanelPlugin *plugin);
 
@@ -24,22 +23,9 @@ static void system_monitor_construct(XfcePanelPlugin *plugin)
         sys_monitor_t *base = init_gui(plugin);
 
         g_signal_connect(G_OBJECT(plugin), "size-changed",
-                         G_CALLBACK(sample_size_changed), NULL);
+                         G_CALLBACK(system_monitor_size_changed), NULL);
         g_signal_connect(G_OBJECT(plugin), "free-data",
-                         G_CALLBACK(genmon_free), base);
-}
-
-
-static gboolean sample_size_changed(XfcePanelPlugin *plugin, gint size)
-{
-        GtkOrientation orientation = xfce_panel_plugin_get_orientation(plugin);
-
-        if (orientation == GTK_ORIENTATION_HORIZONTAL)
-                gtk_widget_set_size_request(GTK_WIDGET(plugin), -1, -1);
-        else
-                gtk_widget_set_size_request(GTK_WIDGET(plugin), size, -1);
-
-        return TRUE;
+                         G_CALLBACK(system_monitor_free), base);
 }
 
 
@@ -146,13 +132,6 @@ static void init_menu(XfcePanelPlugin *plugin)
 
         g_signal_connect(G_OBJECT(plugin), "about",
                          G_CALLBACK(menu_about), NULL);
-}
-
-
-static void genmon_free(XfcePanelPlugin *plugin, sys_monitor_t *base)
-{
-        free(base->font);
-        free(base);
 }
 
 
