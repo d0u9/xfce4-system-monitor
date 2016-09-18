@@ -12,6 +12,7 @@ void free_cpu_data(cpu_t *cpu);
 
 
 /* static function decalartion */
+static int calculate_cpu_usage(cpu_core_t *previous, cpu_core_t *core);
 static int get_cpu_usage(cpu_t *cpu);
 static int get_cpu_info(cpu_t *cpu);
 static int get_cpu_core_num(void);
@@ -24,9 +25,7 @@ static int get_cpu_core_num(void);
 int get_cpu_data(cpu_t * cpu)
 {
         int ret1 = -1, ret2 = -1;
-
-        ret1 = get_cpu_usage(cpu);
-        ret2 = get_cpu_info(cpu);
+ret1 = get_cpu_usage(cpu); ret2 = get_cpu_info(cpu);
 
         if (ret1 < 0 || ret2 < 0)
                 return -1;
@@ -85,10 +84,17 @@ static int get_cpu_usage(cpu_t *cpu)
                                &usage.irq, &usage.softirq);
 #endif
                         if (line_no == 0) {
+                                cpu_core_t previous = cpu->total;
                                 cpu->total = usage;
+                                if (calculate_cpu_usage(&previous, &cpu->total) < 0)
+                                        goto error;
                         }
                         else {
-                                *(cpu->cpu_cores + line_no - 1) = usage;
+                                cpu_core_t previous = cpu->cpu_cores[line_no - 1];
+                                cpu->cpu_cores[line_no - 1]  = usage;
+                                if (calculate_cpu_usage(&previous,
+                                                        &cpu->cpu_cores[line_no -1]) < 0)
+                                        goto error;
                         }
                 }
 
@@ -160,4 +166,30 @@ static int get_cpu_core_num(void)
 
         return nb_lines > 1 ? nb_lines - 1 : -1;
 #endif
+}
+
+
+static int calculate_cpu_usage(cpu_core_t *previous, cpu_core_t *core)
+{
+        gulong used = 0, total = 0;
+
+#if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
+        used = core->user + core->nice + core->system + core->irq + core->softirq +core->guest + core->guest_nice;
+        total = used + core->idle + core->iowait + core->steal;
+#else
+        used = core->user + core->nice + core->system + core->irq + core->softirq;
+        total = used + core->idle + core->iowait;
+#endif
+
+        if ((total - previous->total) != 0) {
+                g_print("used = %lu, total = %lu\n", used - previous->used, total - previous->total);
+                core->load = (used - previous->used) * 10000 / (total - previous->total);
+        } else {
+                core->load = 0;
+        }
+
+        core->total = total;
+        core->used = used;
+
+        return 0;
 }

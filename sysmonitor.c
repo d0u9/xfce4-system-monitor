@@ -57,7 +57,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
         set_font(base, DEFAULT_FONT);
         init_menu(plugin);
 
-        set_update_rate(base, 1);
+        set_update_rate(base, 2);
         get_cpu_data(&base->cpu);
 
         return base;

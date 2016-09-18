@@ -1,4 +1,6 @@
+#include <stdio.h>
 #include "event_handler.h"
+#include "cpu.h"
 
 gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size);
 gboolean timeout(sys_monitor_t *base);
@@ -20,6 +22,13 @@ gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size)
 
 gboolean timeout(sys_monitor_t *base)
 {
+        gchar str[32] = {0};
+
+        /* update cpu usage */
+        get_cpu_data(&base->cpu);
+        snprintf(str, 31, "%.1f%%", base->cpu.total.load / 100.0);
+        gtk_label_set_text(GTK_LABEL(base->gui.cpu_usage_label), str);
+
         g_print("Timeout !!!\n");
 
         return TRUE;

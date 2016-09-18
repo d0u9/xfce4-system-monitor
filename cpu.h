@@ -5,6 +5,7 @@
 #include <linux/version.h>
 
 #define MAX_FREQ_STR_LEN        16
+#define CPU_SCALE               128
 
 typedef struct {
         gulong  user;
@@ -19,6 +20,9 @@ typedef struct {
         gulong  guest;
         gulong  guest_nice;
 #endif
+        gulong  total;
+        gulong  used;
+        gulong  load;
         char    freq[MAX_FREQ_STR_LEN];
 } cpu_core_t;
 
