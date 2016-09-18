@@ -23,11 +23,17 @@ static int get_cpu_core_num(void);
 
 int get_cpu_data(cpu_t * cpu)
 {
-        get_cpu_usage(cpu);
-        get_cpu_info(cpu);
+        int ret1 = -1, ret2 = -1;
+
+        ret1 = get_cpu_usage(cpu);
+        ret2 = get_cpu_info(cpu);
+
+        if (ret1 < 0 || ret2 < 0)
+                return -1;
 
         return 0;
 }
+
 
 int alloc_cpu_data(cpu_t *cpu)
 {
@@ -102,7 +108,28 @@ error:
 
 static int get_cpu_info(cpu_t *cpu)
 {
-        //TODO: Add codes here to obtain info of CPU (e.g. frequence of CPU)
+        cpu_core_t *core = NULL;
+        FILE    *cpuinfo_file = NULL;
+        char    line[MAX_FILE_LINE_LEN + 1] = {0};
+        int     core_index = -1;
+
+        if (!(cpuinfo_file = fopen(PROC_CPUINFO, "r")))
+                return -1;
+
+        while (fgets(line, MAX_FILE_LINE_LEN, cpuinfo_file)) {
+                if (strncmp("processor", line, 9) == 0) {
+                        sscanf(line, "%*s %*s %d", &core_index);
+                        core = &(cpu->cpu_cores[core_index]);
+                } else if (strncmp("cpu MHz", line, 7) == 0) {
+                        memset(core->freq, 0, MAX_FREQ_STR_LEN);
+                        sscanf(line, "%*s %*s %*s %s", core->freq);
+                }
+        }
+
+        fclose(cpuinfo_file);
+
+        if (!feof(cpuinfo_file))
+                return -1;
 
         return 0;
 }
