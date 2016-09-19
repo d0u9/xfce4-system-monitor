@@ -6,9 +6,9 @@
 #include "cpu.h"
 
 
-int get_cpu_data(cpu_t * old_data);
-int alloc_cpu_data(cpu_t *cpu);
-void free_cpu_data(cpu_t *cpu);
+int init_cpu(cpu_t *cpu);
+int update_cpu(cpu_t *cpu);
+void free_cpu(cpu_t *cpu);
 
 
 /* static function decalartion */
@@ -22,7 +22,7 @@ static int get_cpu_core_num(void);
 #define PROC_CPUINFO    "/proc/cpuinfo"
 
 
-int get_cpu_data(cpu_t * cpu)
+int update_cpu(cpu_t *cpu)
 {
         int ret1 = -1, ret2 = -1;
 ret1 = get_cpu_usage(cpu); ret2 = get_cpu_info(cpu);
@@ -34,7 +34,7 @@ ret1 = get_cpu_usage(cpu); ret2 = get_cpu_info(cpu);
 }
 
 
-int alloc_cpu_data(cpu_t *cpu)
+int init_cpu(cpu_t *cpu)
 {
         int core_num = 0;
         cpu_core_t *cpu_cores = NULL;
@@ -53,7 +53,7 @@ int alloc_cpu_data(cpu_t *cpu)
 }
 
 
-void free_cpu_data(cpu_t *cpu)
+void free_cpu(cpu_t *cpu)
 {
         free(cpu->cpu_cores);
 }

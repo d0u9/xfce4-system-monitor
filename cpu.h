@@ -33,8 +33,8 @@ typedef struct {
 } cpu_t;
 
 
-extern int get_cpu_data(cpu_t *old_data);
-extern int alloc_cpu_data(cpu_t *cpu);
-extern void free_cpu_data(cpu_t *cpu);
+extern int init_cpu(cpu_t *cpu);
+extern int update_cpu(cpu_t *cpu);
+extern void free_cpu(cpu_t *cpu);
 
 #endif

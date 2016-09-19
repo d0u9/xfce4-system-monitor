@@ -25,7 +25,7 @@ gboolean timeout(sys_monitor_t *base)
         gchar str[32] = {0};
 
         /* update cpu usage */
-        get_cpu_data(&base->cpu);
+        update_cpu(&base->cpu);
         snprintf(str, 31, "%.1f%%", base->cpu.total.load / 100.0);
         gtk_label_set_text(GTK_LABEL(base->gui.cpu_usage_label), str);
 
@@ -37,7 +37,7 @@ gboolean timeout(sys_monitor_t *base)
 
 void system_monitor_free(XfcePanelPlugin *plugin, sys_monitor_t *base)
 {
-        free_cpu_data(&base->cpu);
+        free_cpu(&base->cpu);
         free(base->font);
         free(base);
 }
