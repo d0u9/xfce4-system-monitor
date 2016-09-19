@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include "event_handler.h"
 #include "cpu.h"
+#include "network.h"
 
 gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size);
 gboolean timeout(sys_monitor_t *base);
@@ -29,6 +30,13 @@ gboolean timeout(sys_monitor_t *base)
         snprintf(str, 31, "%.1f%%", base->cpu.total.load / 100.0);
         gtk_label_set_text(GTK_LABEL(base->gui.cpu_usage_label), str);
 
+        /* update network */
+        update_net(&base->net);
+        update_speed_str(&base->net, base->update_interval);
+        g_print("send = %s, recv = %s\n", base->net.send_speed, base->net.recv_speed);
+        gtk_label_set_text(GTK_LABEL(base->gui.dowlink_speed_label), base->net.recv_speed);
+        gtk_label_set_text(GTK_LABEL(base->gui.uplink_speed_label), base->net.send_speed);
+
         g_print("Timeout !!!\n");
 
         return TRUE;
@@ -38,6 +46,7 @@ gboolean timeout(sys_monitor_t *base)
 void system_monitor_free(XfcePanelPlugin *plugin, sys_monitor_t *base)
 {
         free_cpu(&base->cpu);
+        free_net(&base->net);
         free(base->font);
         free(base);
 }
