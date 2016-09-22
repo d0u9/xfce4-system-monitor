@@ -33,6 +33,6 @@ typedef struct {
 extern int init_sensor(sensor_t *sensor);
 extern int update_sensor(sensor_t *sensor);
 extern void free_sensor(sensor_t *sensor);
-extern core_s_t *max_temp_core(list_t *cpu_list);
+extern core_s_t *max_temp_core(list_t *cpu_list, core_s_t *ret);
 
 #endif

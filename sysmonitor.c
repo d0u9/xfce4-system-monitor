@@ -129,6 +129,9 @@ static sys_monitor_t *alloc_memory(void)
         if (init_net(&base->net) < 0)
                 goto error;
 
+        if (init_sensor(&base->sensor) < 0)
+                goto error;
+
         return base;
 
 error:

@@ -19,7 +19,7 @@
 int init_sensor(sensor_t *sensor);
 int update_sensor(sensor_t *sensor);
 void free_sensor(sensor_t *sensor);
-core_s_t *max_temp_core(list_t *cpu_list);
+core_s_t *max_temp_core(list_t *cpu_list, core_s_t *ret);
 
 
 // axuiliary functions
@@ -139,7 +139,7 @@ static int get_core_temp(const char *path, cpu_s_t *cpu)
         char *file_suffix = str2;
         struct dirent **namelist = NULL;
 
-        /*reset_cpu_cursor(cpu);*/
+        reset_cpu_cursor(cpu);
         int n = scandir(path, &namelist, filter_temp_file, alphasort);
 
         core_s_t *core = NULL;
@@ -173,7 +173,6 @@ static int get_core_temp(const char *path, cpu_s_t *cpu)
 
 static int get_cpu_temp(const char *path, sensor_t *sensor)
 {
-        printf("%s\n", path);
         if (sensor->cur_cpu->next == &sensor->cpu_list) {
                 cpu_s_t *cpu = (cpu_s_t*)calloc(1, sizeof(cpu_s_t));
                 list_init(&cpu->list);
@@ -183,7 +182,6 @@ static int get_cpu_temp(const char *path, sensor_t *sensor)
         } else {
                 sensor->cur_cpu = sensor->cur_cpu->next;
         }
-        reset_cpu_cursor(entry_of(sensor->cur_cpu, cpu_s_t, list));
         get_core_temp(path, entry_of(sensor->cur_cpu, cpu_s_t, list));
 
         // TODO: free remaining nodes;
@@ -196,7 +194,6 @@ static int process_valid_dir(const char *path, sensor_t *sensor)
 {
         char str[MAX_PATH_STR_LEN] = {0};
         sprintf(str, "%s/name", path);
-        printf(">>> %s\n", str);
         get_first_line(str, str, MAX_PATH_STR_LEN);
 
         if (strncmp("coretemp", str, 8) == 0)
@@ -209,7 +206,6 @@ static int process_valid_dir(const char *path, sensor_t *sensor)
 static int parse_hwmon(const char *path, sensor_t *sensor)
 {
         static int depth = 0;
-        printf("%s\n", path);
         char str[MAX_PATH_STR_LEN] = {0};
         struct dirent **namelist = NULL;
 
@@ -278,14 +274,15 @@ void free_sensor(sensor_t *sensor)
 
 int update_sensor(sensor_t *sensor)
 {
-                return parse_hwmon(SYS_HWMON, sensor);
+        reset_sensor_cursor(sensor);
+        return parse_hwmon(SYS_HWMON, sensor);
 }
 
 
-core_s_t *max_temp_core(list_t *cpu_list)
+core_s_t *max_temp_core(list_t *cpu_list, core_s_t *ret)
 {
         list_t *cur_cpu, *head_cpu, *cur_core, *head_core;
-        core_s_t *ret = NULL;
+        ret = NULL;
         int max = 0;
         head_cpu = cpu_list;
         list_for_each(cur_cpu, head_cpu) {
