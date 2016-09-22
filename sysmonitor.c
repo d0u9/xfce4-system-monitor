@@ -60,6 +60,13 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
 
         update_net(&base->net);
         update_cpu(&base->cpu);
+        update_sensor(&base->sensor);
+
+        update_sensor(&base->sensor);
+        core_s_t *core = NULL;
+        core = max_temp_core(&base->sensor.cpu_list, core);
+        sleep(1);
+
         set_update_rate(base, DEFAULT_UPDATE_INTERVAL);
 
         return base;

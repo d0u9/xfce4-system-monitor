@@ -1,3 +1,4 @@
+#include <string.h>
 #include <stdio.h>
 #include "event_handler.h"
 #include "cpu.h"

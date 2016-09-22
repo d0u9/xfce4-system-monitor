@@ -5,6 +5,7 @@
 
 #include "cpu.h"
 #include "network.h"
+#include "sensor.h"
 
 typedef struct {
         GtkWidget       *uplink_speed_label;
@@ -30,6 +31,7 @@ typedef struct {
         gui_t           gui;
         cpu_t           cpu;
         net_t           net;
+        sensor_t        sensor;
         char    *font;
 } sys_monitor_t;
 
@@ -41,6 +43,7 @@ typedef struct {
 
 #define MAX_FONT_STR_LEN        128
 #define MAX_FILE_LINE_LEN       256
+#define MAX_PATH_STR_LEN        128
 
 #define MAX_UPLINK_SPEED_LABEL_WIDTH    12
 #define MAX_DOWNLINK_SPEED_LABEL_WIDTH  12
