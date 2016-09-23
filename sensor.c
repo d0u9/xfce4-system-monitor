@@ -81,9 +81,10 @@ static int filter_valid_file(const struct dirent *dir)
 
 static void free_namelist(struct dirent **namelist, int n)
 {
-        while (n--)
+        while (n-- > 0)
                 free(namelist[n]);
-        free(namelist);
+        if (namelist)
+                free(namelist);
 }
 
 
@@ -223,6 +224,9 @@ static int parse_hwmon(const char *path, sensor_t *sensor)
                 parse_hwmon(str, sensor);
         }
 
+        if (!namelist) {
+                return 0;
+        }
         free_namelist(namelist, n);
 
 out:
