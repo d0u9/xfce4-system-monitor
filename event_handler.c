@@ -42,7 +42,7 @@ gboolean timeout(sys_monitor_t *base)
         update_sensor(&base->sensor);
         core_s_t *core = NULL;
         if ((core = max_temp_core(&base->sensor.cpu_list, core))) {
-                sprintf(str, "%.1f \u2103", core->input / 1000.0f);
+                sprintf(str, "%.1f "STR_TEMPERATURE_SIGN, core->input / 1000.0f);
                 g_print("label = %s, %s\n", core->label, str);
                 gtk_label_set_text(GTK_LABEL(base->gui.cpu_sensor_label), str);
         }

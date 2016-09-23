@@ -59,6 +59,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
         init_menu(plugin);
 
         update_net(&base->net);
+        update_speed_str(&base->net, base->update_interval);
         update_cpu(&base->cpu);
         update_sensor(&base->sensor);
 
@@ -84,7 +85,7 @@ static void create_layout(sys_monitor_t *base)
         gtk_box_pack_start(GTK_BOX(base->hvbox), layout_table, FALSE, FALSE, 0);
         base->layout_table = layout_table;
 
-        GtkWidget *uplink_speed_label = gtk_label_new("900 MB/s U");
+        GtkWidget *uplink_speed_label = gtk_label_new(DEFAULT_UPLINK_DISPLAY);
         gtk_widget_show(uplink_speed_label);
         gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label),
                                   MAX_UPLINK_SPEED_LABEL_WIDTH);
@@ -92,7 +93,7 @@ static void create_layout(sys_monitor_t *base)
                                   uplink_speed_label, 0, 2, 0, 1);
         gui->uplink_speed_label = uplink_speed_label;
 
-        GtkWidget *downlink_speed_label = gtk_label_new("812 MB/s D");
+        GtkWidget *downlink_speed_label = gtk_label_new(DEFAULT_DOWNLINK_DISPLAY);
         gtk_widget_show(downlink_speed_label);
         gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label),
                                   MAX_DOWNLINK_SPEED_LABEL_WIDTH);
@@ -100,7 +101,7 @@ static void create_layout(sys_monitor_t *base)
                                   downlink_speed_label, 0, 2, 1, 2);
         gui->dowlink_speed_label = downlink_speed_label;
 
-        GtkWidget *cpu_usage_label = gtk_label_new("60.6%");
+        GtkWidget *cpu_usage_label = gtk_label_new(DEFAULT_CPU_LOAD_DISPLAY);
         gtk_widget_show(cpu_usage_label);
         gtk_label_set_width_chars(GTK_LABEL(cpu_usage_label),
                                   MAX_CPU_USAGE_LABEL_WIDTH);
@@ -108,7 +109,7 @@ static void create_layout(sys_monitor_t *base)
                                   cpu_usage_label, 0, 1, 2, 3);
         gui->cpu_usage_label = cpu_usage_label;
 
-        GtkWidget *cpu_sensor_label = gtk_label_new("52 oC");
+        GtkWidget *cpu_sensor_label = gtk_label_new(DEFAULT_CORE_TEMP_DISPLAY);
         gtk_widget_show(cpu_sensor_label);
         gtk_label_set_width_chars(GTK_LABEL(cpu_sensor_label),
                                   MAX_CPU_SENSOR_LABEL_WIDTH);
