@@ -17,13 +17,12 @@ int update_speed_str(net_t *net, int interval);
 
 
 static struct speed calculate_speed(uint64_t old, uint64_t new, int interval);
-static void free_net_dev(net_dev_t *devs);
 static net_dev_t *get_net_status(net_t *net);
 
 
 int init_net(net_t *net)
 {
-        net->devs = get_net_status(NULL);
+        list_init(&net->dev_list);
         return 0;
 }
 
@@ -37,7 +36,12 @@ int update_net(net_t *net)
 
 int free_net(net_t *net)
 {
-        free_net_dev(net->devs);
+        list_t *cur, *head = &net->dev_list;
+        list_for_each(cur, head) {
+                cur = list_remove(cur);
+                net_dev_t *dev = entry_of(cur, net_dev_t, list);
+                free(dev);
+        }
         return 0;
 }
 
@@ -73,17 +77,6 @@ struct speed calculate_speed(uint64_t old, uint64_t new, int interval)
 }
 
 
-static void free_net_dev(net_dev_t *devs)
-{
-        net_dev_t *cur = NULL;
-        while (devs) {
-                cur = devs;
-                devs = devs->next;
-                free(cur);
-        }
-}
-
-
 static int get_net_link_status(const char *dev_name)
 {
         char    line[MAX_FILE_LINE_LEN] = {0};
@@ -104,51 +97,56 @@ static net_dev_t *get_net_status(net_t *net)
 {
         char    line[MAX_FILE_LINE_LEN] = {0};
         FILE    *fp = NULL;
+        list_t  *head, *cur, *tmp;
         int online_num = 0, dev_num = 0;
 
-        net_dev_t       dummy;
-        net_dev_t       *devs = net ? net->devs : NULL;
-        net_dev_t       *cur = devs,  *last = devs;
+        cur = head = &net->dev_list;
 
         if ((fp = fopen(PROC_NET_DEV, "r")) == NULL)
                 return NULL;
 
-        last = &dummy;
-        last->next = cur = devs;
-
-        for (int i = 0; fgets(line, MAX_FILE_LINE_LEN, fp); ++i) {
-                if (i > 1) {
-                        if (!cur)
-                                cur = (net_dev_t *) calloc(1, sizeof(net_dev_t));
-
-                        cur->pre_recv_pkgs  = cur->recv_pkgs;
-                        cur->pre_recv_bytes = cur->recv_bytes;
-                        cur->pre_send_pkgs  = cur->send_pkgs;
-                        cur->pre_send_bytes = cur->send_bytes;
-
-                        sscanf(line, "%s %"PRIu64" %"PRIu64" %*s %*s %*s %*s "
-                                     "%*s %*s %"PRIu64" %"PRIu64,
-                                      cur->dev_name, &cur->recv_bytes, &cur->recv_pkgs,
-                                      &cur->send_bytes, &cur->send_pkgs);
-
-                        dev_num++;
-                        if ((cur->online = get_net_link_status(cur->dev_name)))
-                                online_num ++;
-
-                        last->next = cur;
-                        last = cur;
-                        cur = cur->next;
+        fgets(line, MAX_FILE_LINE_LEN, fp);
+        fgets(line, MAX_FILE_LINE_LEN, fp);
+        memset(line, 0, MAX_FILE_LINE_LEN);
+        for (dev_num = 0; fgets(line, MAX_FILE_LINE_LEN, fp); dev_num++) {
+                net_dev_t *dev = NULL;
+                if (cur->next == head) {
+                        dev = (net_dev_t *)calloc(1, sizeof(net_dev_t));
+                        list_init(&dev->list);
+                        list_add(cur, &dev->list);
+                } else {
+                        dev = entry_of(cur->next, net_dev_t, list);
                 }
+
+                dev->pre_recv_pkgs  = dev->recv_pkgs;
+                dev->pre_recv_bytes = dev->recv_bytes;
+                dev->pre_send_pkgs  = dev->send_pkgs;
+                dev->pre_send_bytes = dev->send_bytes;
+
+
+                sscanf(line, "%s %"PRIu64" %"PRIu64" %*s %*s %*s %*s "
+                             "%*s %*s %"PRIu64" %"PRIu64,
+                             dev->dev_name, &dev->recv_bytes, &dev->recv_pkgs,
+                             &dev->send_bytes, &dev->send_pkgs);
+
+                if ((dev->online = get_net_link_status(dev->dev_name)))
+                        online_num ++;
+
+                cur = cur->next;
         }
+
+        fclose(fp);
 
         if (net) {
                 net->online_num = online_num;
                 net->dev_num = dev_num;
         }
-        free_net_dev(last->next);
-        last->next = NULL;
+        list_for_each_continue_safe(cur, tmp, head) {
+                cur = list_remove(cur);
+                free(entry_of(cur, net_dev_t, list));
+        }
 
-        return dummy.next;
+        return NULL;
 }
 
 
@@ -164,15 +162,17 @@ int update_speed_str(net_t *net, int interval)
         net->send_pkgs  = 0;
         net->send_bytes = 0;
 
-        net_dev_t *cur = net->devs;
-        while (cur) {
-                if (cur->online) {
-                        net->recv_pkgs  += cur->recv_pkgs;
-                        net->recv_bytes += cur->recv_bytes;
-                        net->send_pkgs  += cur->send_pkgs;
-                        net->send_bytes += cur->send_bytes;
+        list_t *head = &net->dev_list, *cur = NULL;
+
+        list_for_each(cur, head) {
+                net_dev_t *dev = NULL;
+                dev = entry_of(cur, net_dev_t, list);
+                if (dev->online) {
+                        net->recv_pkgs  += dev->recv_pkgs;
+                        net->recv_bytes += dev->recv_bytes;
+                        net->send_pkgs  += dev->send_pkgs;
+                        net->send_bytes += dev->send_bytes;
                 }
-                cur = cur->next;
         }
 
         struct speed speed;
