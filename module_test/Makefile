@@ -17,6 +17,9 @@ list: list_test.c ../list.c ../list.h
 sensor: sensor_test.c ../sensor.c
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) sensor_test.c ../sensor.c ../list.c -o sensor.out
 
+network: network_test.c ../network.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) network_test.c ../network.c ../list.c -o network.out
+
 .PHONY: clean
 
 clean:
