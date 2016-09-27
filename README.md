@@ -17,23 +17,19 @@ sudo apt-get install xfce4-panel-dev libgtk2.0-dev
 
 ## Build and install
 
-- build **release** version, run:
-
 ```
-make
+sudo make all
 ```
 
-- build **debug** release, run:
+## Uninstall
 
 ```
-make debug
+sudo make uninstall
 ```
 
-- install panel plugin, run:
+## Tested Platform
 
-```
-make install
-```
+Have tested on Debian8.
 
 ---
 
