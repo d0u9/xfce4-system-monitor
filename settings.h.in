@@ -7,6 +7,8 @@
 
 `#'define `TEXT_VERSION'            "VERSION_MAJOR.VERSION_MINOR"
 
+`#'define `ICON'                    "ICON"
+
 `#'define `TEXT_PROGRAM_NAME'       "FULL_NAME"
 `#'define `TEXT_WEBSITE'            "WEB_SITE"
 
