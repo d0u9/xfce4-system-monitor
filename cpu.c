@@ -25,7 +25,8 @@ static int get_cpu_core_num(void);
 int update_cpu(cpu_t *cpu)
 {
         int ret1 = -1, ret2 = -1;
-ret1 = get_cpu_usage(cpu); ret2 = get_cpu_info(cpu);
+        ret1 = get_cpu_usage(cpu);
+        ret2 = get_cpu_info(cpu);
 
         if (ret1 < 0 || ret2 < 0)
                 return -1;
@@ -104,6 +105,7 @@ static int get_cpu_usage(cpu_t *cpu)
         if (!feof(stat_file))
                 goto error;
 
+        fclose(stat_file);
         return 0;
 error:
         fclose(stat_file);

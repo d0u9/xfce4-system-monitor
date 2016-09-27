@@ -20,6 +20,9 @@ sensor: sensor_test.c ../sensor.c
 network: network_test.c ../network.c
 	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) network_test.c ../network.c ../list.c -o network.out
 
+cpu: cpu_test.c ../cpu.c
+	$(CC) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) cpu_test.c ../cpu.c ../list.c -o cpu.out
+
 .PHONY: clean
 
 clean:
