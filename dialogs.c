@@ -4,6 +4,9 @@
 #include "settings.h"
 #include "dialogs.h"
 
+void menu_about(XfcePanelPlugin *plugin);
+void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base);
+
 void menu_about(XfcePanelPlugin *plugin)
 {
         GdkPixbuf *icon;
@@ -26,3 +29,8 @@ void menu_about(XfcePanelPlugin *plugin)
                 g_object_unref(G_OBJECT(icon));
 }
 
+
+void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base)
+{
+        g_print("---------------- Properties menu is triggered --------------------");
+}

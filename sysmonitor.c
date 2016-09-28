@@ -8,7 +8,7 @@
 #include "sysmonitor.h"
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
-static void init_menu(XfcePanelPlugin *plugin);
+static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static void create_layout(sys_monitor_t *base);
 /*static void set_update_rate(sys_monitor_t *base, guint rate);*/
 static void set_update_rate(sys_monitor_t *base, enum interval rate);
@@ -56,7 +56,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
 
         create_layout(base);
         set_font(base, DEFAULT_FONT);
-        init_menu(plugin);
+        init_menu(plugin, base);
 
         update_net(&base->net);
         update_speed_str(&base->net, base->update_interval);
@@ -149,12 +149,15 @@ error:
 }
 
 
-static void init_menu(XfcePanelPlugin *plugin)
+static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base)
 {
         xfce_panel_plugin_menu_show_about(plugin);
-
         g_signal_connect(G_OBJECT(plugin), "about",
                          G_CALLBACK(menu_about), NULL);
+
+        xfce_panel_plugin_menu_show_configure(plugin);
+        g_signal_connect(G_OBJECT(plugin), "configure-plugin",
+                         G_CALLBACK(menu_properties), base);
 }
 
 
