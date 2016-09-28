@@ -118,16 +118,12 @@ static net_dev_t *get_net_status(net_t *net)
                         dev = entry_of(cur->next, net_dev_t, list);
                 }
 
-                dev->pre_recv_pkgs  = dev->recv_pkgs;
-                dev->pre_recv_bytes = dev->recv_bytes;
-                dev->pre_send_pkgs  = dev->send_pkgs;
-                dev->pre_send_bytes = dev->send_bytes;
-
+                dev->pre_data = dev->cur_data;
 
                 sscanf(line, "%s %"PRIu64" %"PRIu64" %*s %*s %*s %*s "
                              "%*s %*s %"PRIu64" %"PRIu64,
-                             dev->dev_name, &dev->recv_bytes, &dev->recv_pkgs,
-                             &dev->send_bytes, &dev->send_pkgs);
+                             dev->dev_name, &dev->cur_data.recv_bytes, &dev->cur_data.recv_pkgs,
+                             &dev->cur_data.send_bytes, &dev->cur_data.send_pkgs);
 
                 if ((dev->online = get_net_link_status(dev->dev_name)))
                         online_num ++;
@@ -152,15 +148,9 @@ static net_dev_t *get_net_status(net_t *net)
 
 int update_speed_str(net_t *net, int interval)
 {
-        net->pre_recv_pkgs  = net->recv_pkgs;
-        net->pre_recv_bytes = net->recv_bytes;
-        net->pre_send_pkgs  = net->send_pkgs;
-        net->pre_send_bytes = net->send_bytes;
+        net->pre_data = net->cur_data;
 
-        net->recv_pkgs  = 0;
-        net->recv_bytes = 0;
-        net->send_pkgs  = 0;
-        net->send_bytes = 0;
+        memset(&net->cur_data, 0, sizeof(net->cur_data));
 
         list_t *head = &net->dev_list, *cur = NULL;
 
@@ -168,16 +158,16 @@ int update_speed_str(net_t *net, int interval)
                 net_dev_t *dev = NULL;
                 dev = entry_of(cur, net_dev_t, list);
                 if (dev->online) {
-                        net->recv_pkgs  += dev->recv_pkgs;
-                        net->recv_bytes += dev->recv_bytes;
-                        net->send_pkgs  += dev->send_pkgs;
-                        net->send_bytes += dev->send_bytes;
+                        net->cur_data.recv_pkgs  += dev->cur_data.recv_pkgs;
+                        net->cur_data.recv_bytes += dev->cur_data.recv_bytes;
+                        net->cur_data.send_pkgs  += dev->cur_data.send_pkgs;
+                        net->cur_data.send_bytes += dev->cur_data.send_bytes;
                 }
         }
 
         struct speed speed;
 
-        speed = calculate_speed(net->pre_recv_bytes, net->recv_bytes, interval);
+        speed = calculate_speed(net->pre_data.recv_bytes, net->cur_data.recv_bytes, interval);
         if (speed.value < CONST_EPSILON)
                 sprintf(net->recv_speed, "%.2f %s " STR_DOWNLINK_SIGN_IDLE,
                         speed.value, speed.unit);
@@ -185,7 +175,7 @@ int update_speed_str(net_t *net, int interval)
                 sprintf(net->recv_speed, "%.2f %s " STR_DOWNLINK_SIGN_BUSY,
                         speed.value, speed.unit);
 
-        speed = calculate_speed(net->pre_send_bytes, net->send_bytes, interval);
+        speed = calculate_speed(net->pre_data.send_bytes, net->pre_data.send_bytes, interval);
         if (speed.value < CONST_EPSILON)
                 sprintf(net->send_speed, "%.2f %s " STR_UPLINK_SIGN_IDLE,
                         speed.value, speed.unit);
