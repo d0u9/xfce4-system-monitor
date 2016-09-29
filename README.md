@@ -12,7 +12,7 @@ An xfce panel plugin to display the necessary information of the system.
 For Debian or Ubuntu users.
 
 ```
-sudo apt-get install xfce4-panel-dev libgtk2.0-dev
+sudo apt-get install xfce4-panel-dev libgtk2.0-dev libxfce4ui-1-dev
 ```
 
 ## Build and install
