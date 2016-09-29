@@ -8,12 +8,11 @@
 #include "sysmonitor.h"
 
 guint get_mseconds_by_level(enum interval level);
+void set_update_rate(sys_monitor_t *base, enum interval rate);
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static void create_layout(sys_monitor_t *base);
-/*static void set_update_rate(sys_monitor_t *base, guint rate);*/
-static void set_update_rate(sys_monitor_t *base, enum interval rate);
 static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
 static sys_monitor_t *alloc_memory(void);
 static sys_monitor_t *init_gui(XfcePanelPlugin *plugin);
@@ -202,7 +201,7 @@ static int set_font(sys_monitor_t *sys_monitor, const char *font_name)
 }
 
 
-static void set_update_rate(sys_monitor_t *base, enum interval level)
+void set_update_rate(sys_monitor_t *base, enum interval level)
 {
         guint update;
 

@@ -18,7 +18,8 @@ enum interval {
         level_1 = 0,
         level_2,
         level_3,
-        level_4
+        level_4,
+        level_end
 };
 
 typedef struct {
@@ -37,12 +38,18 @@ typedef struct {
 
 
 extern guint get_mseconds_by_level(enum interval level);
+extern void set_update_rate(sys_monitor_t *base, enum interval rate);
 
 
 //#define DEFAULT_FONT            "(default)"
 #define DEFAULT_FONT            "Sans 6"
+
 #define DEFAULT_UPDATE_INTERVAL level_3
 #define DEFAULT_INTERVAL_FACTOR 250
+#define DEFAULT_STR_FASTEST      "Fastest (~250ms)"
+#define DEFAULT_STR_FAST        "Fast (~500ms)"
+#define DEFAULT_STR_NORMAL      "Normal (~750ms)"
+#define DEFAULT_STR_SLOW        "Slow (~1s)"
 
 #define DEFAULT_UPLINK_DISPLAY          "N/A B/s \u25B3"
 #define DEFAULT_DOWNLINK_DISPLAY        "N/A B/s \u25BD"
