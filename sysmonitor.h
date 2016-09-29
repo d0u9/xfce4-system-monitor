@@ -15,10 +15,10 @@ typedef struct {
 } gui_t;
 
 enum interval {
-        level_1 = 250,
-        level_2 = 500,
-        level_3 = 750,
-        level_4 = 1000
+        level_1 = 0,
+        level_2,
+        level_3,
+        level_4
 };
 
 typedef struct {
@@ -36,9 +36,13 @@ typedef struct {
 } sys_monitor_t;
 
 
+extern guint get_mseconds_by_level(enum interval level);
+
+
 //#define DEFAULT_FONT            "(default)"
 #define DEFAULT_FONT            "Sans 6"
 #define DEFAULT_UPDATE_INTERVAL level_3
+#define DEFAULT_INTERVAL_FACTOR 250
 
 #define DEFAULT_UPLINK_DISPLAY          "N/A B/s \u25B3"
 #define DEFAULT_DOWNLINK_DISPLAY        "N/A B/s \u25BD"

@@ -7,6 +7,8 @@
 #include "event_handler.h"
 #include "sysmonitor.h"
 
+guint get_mseconds_by_level(enum interval level);
+
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static void create_layout(sys_monitor_t *base);
@@ -28,6 +30,20 @@ static void system_monitor_construct(XfcePanelPlugin *plugin)
                          G_CALLBACK(system_monitor_size_changed), NULL);
         g_signal_connect(G_OBJECT(plugin), "free-data",
                          G_CALLBACK(system_monitor_free), base);
+}
+
+
+guint get_mseconds_by_level(enum interval level)
+{
+        guint update;
+        switch(level) {
+        case level_1: update = 1 * DEFAULT_INTERVAL_FACTOR; break;
+        case level_2: update = 2 * DEFAULT_INTERVAL_FACTOR; break;
+        case level_3: update = 3 * DEFAULT_INTERVAL_FACTOR; break;
+        case level_4: update = 4 * DEFAULT_INTERVAL_FACTOR; break;
+        default: update = DEFAULT_UPDATE_INTERVAL;
+        }
+        return update;
 }
 
 
@@ -186,16 +202,16 @@ static int set_font(sys_monitor_t *sys_monitor, const char *font_name)
 }
 
 
-static void set_update_rate(sys_monitor_t *base, enum interval rate)
+static void set_update_rate(sys_monitor_t *base, enum interval level)
 {
         guint update;
 
-        base->update_interval = rate;
+        base->update_interval = level;
 
         if (base->timer_id)
                 g_source_remove(base->timer_id);
 
-        update = rate;
+        update = get_mseconds_by_level(level);
 
         base->timer_id = g_timeout_add(update, (GtkFunction)timeout, base);
 }

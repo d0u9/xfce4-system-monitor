@@ -33,7 +33,7 @@ gboolean timeout(sys_monitor_t *base)
 
         /* update network */
         update_net(&base->net);
-        update_speed_str(&base->net, base->update_interval);
+        update_speed_str(&base->net, get_mseconds_by_level(base->update_interval));
         g_print("send = %s, recv = %s\n", base->net.send_speed, base->net.recv_speed);
         gtk_label_set_text(GTK_LABEL(base->gui.dowlink_speed_label), base->net.recv_speed);
         gtk_label_set_text(GTK_LABEL(base->gui.uplink_speed_label), base->net.send_speed);
