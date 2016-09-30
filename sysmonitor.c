@@ -1,4 +1,5 @@
 #include <gtk/gtk.h>
+#include <libxfce4ui/libxfce4ui.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include <string.h>
 
@@ -9,6 +10,7 @@
 
 guint get_mseconds_by_level(enum interval level);
 void set_update_rate(sys_monitor_t *base, enum interval rate);
+void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base);
@@ -16,6 +18,8 @@ static void create_layout(sys_monitor_t *base);
 static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
 static sys_monitor_t *alloc_memory(void);
 static sys_monitor_t *init_gui(XfcePanelPlugin *plugin);
+static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
+void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
 
 /* register this plugin */
 XFCE_PANEL_PLUGIN_REGISTER(system_monitor_construct);
@@ -77,13 +81,11 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
         update_speed_str(&base->net, base->update_interval);
         update_cpu(&base->cpu);
         update_sensor(&base->sensor);
-
         update_sensor(&base->sensor);
         core_s_t *core = NULL;
         core = max_temp_core(&base->sensor.cpu_list, core);
-        sleep(1);
 
-        set_update_rate(base, DEFAULT_UPDATE_INTERVAL);
+	read_settings(plugin, base);
 
         return base;
 }
@@ -213,4 +215,54 @@ void set_update_rate(sys_monitor_t *base, enum interval level)
         update = get_mseconds_by_level(level);
 
         base->timer_id = g_timeout_add(update, (GtkFunction)timeout, base);
+}
+
+
+static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
+{
+	char	*file = NULL;
+
+	XfceRc	*rc;
+	guint	size;
+
+	enum interval	interval = DEFAULT_UPDATE_INTERVAL;
+
+	size = xfce_panel_plugin_get_size(plugin);
+
+	if ((file = xfce_panel_plugin_lookup_rc_file(plugin)) == NULL)
+		goto setup;
+	
+	rc = xfce_rc_simple_open(file, TRUE);
+	g_free(file);
+
+	if (!rc)
+		goto setup;
+	
+	interval = xfce_rc_read_int_entry(rc, "update_interval", interval);
+
+	xfce_rc_close(rc);
+
+setup:
+        set_update_rate(base, interval);
+
+}
+
+
+void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
+{
+	char	*file = NULL;
+	XfceRc	*rc;
+
+	if ((file = xfce_panel_plugin_save_location(plugin, TRUE)) == NULL)
+		return;
+
+	rc = xfce_rc_simple_open(file, FALSE);
+	g_free(file);
+
+	if (!rc)
+		return ;
+
+	xfce_rc_write_int_entry(rc, "update_interval", base->update_interval);
+
+	xfce_rc_close(rc);
 }

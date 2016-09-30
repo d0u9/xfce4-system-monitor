@@ -39,6 +39,7 @@ typedef struct {
 
 extern guint get_mseconds_by_level(enum interval level);
 extern void set_update_rate(sys_monitor_t *base, enum interval rate);
+void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
 
 
 //#define DEFAULT_FONT            "(default)"

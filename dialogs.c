@@ -22,6 +22,7 @@ static void cb_response(GtkWidget *dlg, gint response, sys_monitor_t *base)
 {
         gtk_widget_destroy(dlg);
         xfce_panel_plugin_unblock_menu(base->plugin);
+	write_settings(base->plugin, base);
 }
 
 
