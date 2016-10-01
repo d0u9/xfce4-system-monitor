@@ -40,6 +40,7 @@ typedef struct {
 extern guint get_mseconds_by_level(enum interval level);
 extern void set_update_rate(sys_monitor_t *base, enum interval rate);
 void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
+int set_font(sys_monitor_t *sys_monitor, const char *font_name);
 
 
 //#define DEFAULT_FONT            "(default)"
@@ -62,10 +63,10 @@ void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
 #define MAX_FILE_LINE_LEN       256
 #define MAX_PATH_STR_LEN        128
 
-#define MAX_UPLINK_SPEED_LABEL_WIDTH    12
-#define MAX_DOWNLINK_SPEED_LABEL_WIDTH  12
-#define MAX_CPU_USAGE_LABEL_WIDTH       6
-#define MAX_CPU_SENSOR_LABEL_WIDTH      6
+#define MAX_UPLINK_SPEED_LABEL_WIDTH    16
+#define MAX_DOWNLINK_SPEED_LABEL_WIDTH  16
+#define MAX_CPU_USAGE_LABEL_WIDTH       8
+#define MAX_CPU_SENSOR_LABEL_WIDTH      7
 
 
 #define CONST_Ki                (1 << 10)

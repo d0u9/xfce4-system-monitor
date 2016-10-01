@@ -11,11 +11,11 @@
 guint get_mseconds_by_level(enum interval level);
 void set_update_rate(sys_monitor_t *base, enum interval rate);
 void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
+int set_font(sys_monitor_t *sys_monitor, const char *font_name);
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
 static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base);
 static void create_layout(sys_monitor_t *base);
-static int set_font(sys_monitor_t *sys_monitor, const char *font_name);
 static sys_monitor_t *alloc_memory(void);
 static sys_monitor_t *init_gui(XfcePanelPlugin *plugin);
 static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
@@ -103,6 +103,8 @@ static void create_layout(sys_monitor_t *base)
         base->layout_table = layout_table;
 
         GtkWidget *uplink_speed_label = gtk_label_new(DEFAULT_UPLINK_DISPLAY);
+	gtk_misc_set_alignment(GTK_MISC(uplink_speed_label), 1, 1);
+	gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label), MAX_UPLINK_SPEED_LABEL_WIDTH);
         gtk_widget_show(uplink_speed_label);
         gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label),
                                   MAX_UPLINK_SPEED_LABEL_WIDTH);
@@ -111,6 +113,8 @@ static void create_layout(sys_monitor_t *base)
         gui->uplink_speed_label = uplink_speed_label;
 
         GtkWidget *downlink_speed_label = gtk_label_new(DEFAULT_DOWNLINK_DISPLAY);
+	gtk_misc_set_alignment(GTK_MISC(downlink_speed_label), 1, 1);
+	gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label), MAX_DOWNLINK_SPEED_LABEL_WIDTH);
         gtk_widget_show(downlink_speed_label);
         gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label),
                                   MAX_DOWNLINK_SPEED_LABEL_WIDTH);
@@ -122,6 +126,7 @@ static void create_layout(sys_monitor_t *base)
         gtk_widget_show(cpu_usage_label);
         gtk_label_set_width_chars(GTK_LABEL(cpu_usage_label),
                                   MAX_CPU_USAGE_LABEL_WIDTH);
+	gtk_misc_set_alignment(GTK_MISC(cpu_usage_label), 1, 1);
         gtk_table_attach_defaults(GTK_TABLE(layout_table),
                                   cpu_usage_label, 0, 1, 2, 3);
         gui->cpu_usage_label = cpu_usage_label;
@@ -130,6 +135,7 @@ static void create_layout(sys_monitor_t *base)
         gtk_widget_show(cpu_sensor_label);
         gtk_label_set_width_chars(GTK_LABEL(cpu_sensor_label),
                                   MAX_CPU_SENSOR_LABEL_WIDTH);
+	gtk_misc_set_alignment(GTK_MISC(cpu_sensor_label), 1, 1);
         gtk_table_attach_defaults(GTK_TABLE(layout_table),
                                   cpu_sensor_label, 1, 2, 2, 3);
         gui->cpu_sensor_label = cpu_sensor_label;
@@ -178,7 +184,7 @@ static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base)
 }
 
 
-static int set_font(sys_monitor_t *sys_monitor, const char *font_name)
+int set_font(sys_monitor_t *sys_monitor, const char *font_name)
 {
         PangoFontDescription *t_font = NULL;
         gui_t *gui = &sys_monitor->gui;
@@ -189,6 +195,7 @@ static int set_font(sys_monitor_t *sys_monitor, const char *font_name)
         if (!strncmp(sys_monitor->font, font_name, MAX_FONT_STR_LEN))
                 return 1;
 
+	strncpy(sys_monitor->font, font_name, MAX_FONT_STR_LEN);
         t_font = pango_font_description_from_string(font_name);
         if (!t_font)
                 return -1;
@@ -221,13 +228,10 @@ void set_update_rate(sys_monitor_t *base, enum interval level)
 static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
 {
 	char	*file = NULL;
+	const char *font = NULL;
 
 	XfceRc	*rc;
-	guint	size;
-
 	enum interval	interval = DEFAULT_UPDATE_INTERVAL;
-
-	size = xfce_panel_plugin_get_size(plugin);
 
 	if ((file = xfce_panel_plugin_lookup_rc_file(plugin)) == NULL)
 		goto setup;
@@ -239,11 +243,15 @@ static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
 		goto setup;
 	
 	interval = xfce_rc_read_int_entry(rc, "update_interval", interval);
+	font = xfce_rc_read_entry(rc, "font", NULL);
+
 
 	xfce_rc_close(rc);
 
 setup:
         set_update_rate(base, interval);
+	if (font)
+		set_font(base, font);
 
 }
 
@@ -263,6 +271,7 @@ void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
 		return ;
 
 	xfce_rc_write_int_entry(rc, "update_interval", base->update_interval);
+	xfce_rc_write_entry(rc, "font", base->font);
 
 	xfce_rc_close(rc);
 }

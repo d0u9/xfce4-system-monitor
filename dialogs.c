@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <gtk/gtk.h>
 #include <libxfce4panel/xfce-panel-plugin.h>
 #include <libxfce4ui/libxfce4ui.h>
@@ -10,8 +11,10 @@ void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base);
 
 static void cb_response(GtkWidget *dlg, gint response, sys_monitor_t *base);
 static void cb_update_interval(GtkComboBox *combo, sys_monitor_t *base);
+static void cb_set_font(GtkWidget *button, sys_monitor_t *base);
 
 static void setup_update_interval_option(GtkBox *vbox, GtkSizeGroup *sg, sys_monitor_t *base);
+static void setup_font_selection(GtkBox *vbox, GtkSizeGroup *sg, sys_monitor_t *base);
 static GtkBox *create_tab(void);
 static GtkWidget *create_drop_down(GtkBox *tab, GtkSizeGroup *sg, const gchar *name,
                              const gchar **items, gsize num_items, guint init);
@@ -31,6 +34,14 @@ static void cb_update_interval(GtkComboBox *combo, sys_monitor_t *base)
         set_update_rate(base, gtk_combo_box_get_active(combo));
 }
 
+
+static void cb_set_font(GtkWidget *button, sys_monitor_t *base)
+{
+	const gchar * font;
+	font = gtk_font_button_get_font_name(GTK_FONT_BUTTON(button));
+	gtk_font_button_set_font_name(GTK_FONT_BUTTON(button), font);
+        set_font(base, font);
+}
 
 
 static GtkBox *create_tab(void)
@@ -86,7 +97,7 @@ static GtkWidget *create_drop_down(GtkBox *tab, GtkSizeGroup *sg, const gchar *n
 }
 
 
-static void setup_update_interval_option(GtkBox *vbox, GtkSizeGroup *sg, sys_monitor_t *base)
+static void setup_update_interval_option(GtkBox *tab, GtkSizeGroup *sg, sys_monitor_t *base)
 {
         GtkWidget   *combo;
         gsize       num_items;
@@ -97,9 +108,31 @@ static void setup_update_interval_option(GtkBox *vbox, GtkSizeGroup *sg, sys_mon
         };
         num_items = sizeof( items ) / sizeof( gchar* );
 
-        combo = create_drop_down(vbox, sg, "Update Interval:", items, num_items,
+        combo = create_drop_down(tab, sg, "Update Interval:", items, num_items,
                          base->update_interval);
         g_signal_connect(combo, "changed", G_CALLBACK(cb_update_interval), base);
+}
+
+
+static void setup_font_selection(GtkBox *tab, GtkSizeGroup *sg, sys_monitor_t *base)
+{
+	GtkWidget *button, *label;
+        GtkBox    *box;
+
+        box = GTK_BOX(gtk_hbox_new(FALSE, G_CONFIG_BORDER));
+        gtk_widget_show(GTK_WIDGET(box));
+        gtk_box_pack_start(GTK_BOX(tab), GTK_WIDGET(box), FALSE, FALSE, 0);
+
+	label = gtk_label_new("Fonts");
+	gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
+	gtk_size_group_add_widget(sg, label);
+	gtk_widget_show(label);
+	gtk_box_pack_start(GTK_BOX(box), GTK_WIDGET(label), FALSE, FALSE, 0);
+
+	button = gtk_font_button_new_with_font(base->font);
+	gtk_widget_show(button);
+        g_signal_connect(button, "font-set", G_CALLBACK(cb_set_font), base);
+        gtk_box_pack_start(GTK_BOX(box), button, FALSE, FALSE, 0);
 }
 
 
@@ -130,6 +163,7 @@ void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base)
         /* create tab 1 */
         gb_tab1 = create_tab();
         setup_update_interval_option(gb_tab1, gs_size_group, base);
+	setup_font_selection(gb_tab1, gs_size_group, base);
 
         /* create tab 2 */
         /*gb_tab2 = create_tab();*/
