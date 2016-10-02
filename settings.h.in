@@ -1,0 +1,24 @@
+`#'ifndef __CONFIG_H
+`#'define __CONFIG_H
+
+
+`#'define `VERSION_MAJOR'           VERSION_MAJOR
+`#'define `VERSION_MINOR'           VERSION_MINOR
+
+`#'define `TEXT_VERSION'            "VERSION_MAJOR.VERSION_MINOR"
+
+`#'define `ICON'                    "ICON"
+
+`#'define `TEXT_PROGRAM_NAME'       "FULL_NAME"
+`#'define `TEXT_WEBSITE'            "WEB_SITE"
+
+`#'define `TEXT_COMMENT'            "COMMENT"
+`#'define `TEXT_COPYRIGHT'          "COPYRIGHT"
+
+`#'define `AUTHOR1'                 "AUTHOR1"
+
+`#'define `TEXT_LICENSE'            LICENSE
+
+
+`#'endif
+
