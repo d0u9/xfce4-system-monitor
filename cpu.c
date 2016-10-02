@@ -84,15 +84,6 @@ static int get_cpu_usage(cpu_t *cpu)
                                &usage.idle, &usage.iowait,
                                &usage.irq, &usage.softirq);
 #endif
-			FILE *fp = fopen("/tmp/log", "a+");
-			fprintf(fp, "user %lu, nice %lu, system %lu, idel %lu\n"
-				    "iowait %lu, irq %lu, softirq %lu \n"
-				    "steal, %lu, guest %lu, guest_nice %lu\n\n",
-				    usage.user, usage.nice, usage.system, usage.idle,
-				    usage.iowait, usage.irq, usage.softirq,
-				    usage.steal, usage.guest, usage.guest_nice);
-			fclose(fp);
-
                         if (line_no == 0) {
                                 cpu_core_t previous = cpu->total;
                                 cpu->total = usage;
