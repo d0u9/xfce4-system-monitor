@@ -74,7 +74,7 @@ static int get_cpu_usage(cpu_t *cpu)
         while (fgets(line, MAX_FILE_LINE_LEN, stat_file)) {
                 if (strncmp(line, "cpu", 3 ) == 0) {
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
-                        sscanf(line, "%*s %lu %lu %lu %lu %lu %lu %lu, %lu, %lu, %lu",
+                        sscanf(line, "%*s %lu %lu %lu %lu %lu %lu %lu %lu %lu %lu",
                                &usage.user, &usage.nice, &usage.system, &usage.idle,
                                &usage.iowait, &usage.irq, &usage.softirq,
                                &usage.steal, &usage.guest, &usage.guest_nice);
