@@ -175,7 +175,7 @@ int update_speed_str(net_t *net, int interval)
                 sprintf(net->recv_speed, "%.2f %s " STR_DOWNLINK_SIGN_BUSY,
                         speed.value, speed.unit);
 
-        speed = calculate_speed(net->pre_data.send_bytes, net->pre_data.send_bytes, interval);
+        speed = calculate_speed(net->pre_data.send_bytes, net->cur_data.send_bytes, interval);
         if (speed.value < CONST_EPSILON)
                 sprintf(net->send_speed, "%.2f %s " STR_UPLINK_SIGN_IDLE,
                         speed.value, speed.unit);
