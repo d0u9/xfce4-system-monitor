@@ -11,6 +11,12 @@ An xfce panel plugin to display the necessary information of the system.
 
 ---
 
+# Appearance
+
+![screenshot_1](https://raw.githubusercontent.com/d0u9/xfce4-system-monitor/master/screenshoot_1.png)
+
+---
+
 # How to use
 
 ## Prerequisites
