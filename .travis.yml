@@ -1,0 +1,6 @@
+language: c
+before_install:
+  - sudo apt-get -qq update
+  - sudo apt-get install -y xfce4-panel-dev libgtk2.0-dev libxfce4ui-1-dev
+script: make
+compiler: gcc
