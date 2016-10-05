@@ -8,28 +8,28 @@
 #define CPU_SCALE               128
 
 typedef struct {
-        gulong  user;
-        gulong  nice;
-        gulong  system;
-        gulong  idle;
-        gulong  iowait;
-        gulong  irq;
-        gulong  softirq;
+	gulong user;
+	gulong nice;
+	gulong system;
+	gulong idle;
+	gulong iowait;
+	gulong irq;
+	gulong softirq;
 #if LINUX_VERSION_CODE >= KERNEL_VERSION(2,6,33)
-        gulong  steal;
-        gulong  guest;
-        gulong  guest_nice;
+	gulong steal;
+	gulong guest;
+	gulong guest_nice;
 #endif
-        gulong  total;
-        gulong  used;
-        gulong  load;
-        char    freq[MAX_FREQ_STR_LEN];
+	gulong total;
+	gulong used;
+	gulong load;
+	char   freq[MAX_FREQ_STR_LEN];
 } cpu_core_t;
 
 typedef struct {
-        int     core_num;
-        cpu_core_t      total;
-        cpu_core_t      *cpu_cores;
+	int core_num;
+	cpu_core_t total;
+	cpu_core_t *cpu_cores;
 } cpu_t;
 
 
