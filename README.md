@@ -1,13 +1,15 @@
 # xfce4-system-monitor
 An xfce panel plugin to display the necessary information of the system.
 
-[![GPL 2.0 licensed][1]][2] [![Release][3]][4] [![Downloads][5]][6]
+[![GPL 2.0 licensed][1]][2] [![Release][3]][4] [![Downloads][5]][6] [![Build Status][7]][8]
 [1]: https://img.shields.io/badge/license-GPL%202.0-blue.svg
 [2]: https://github.com/d0u9/xfce4-system-monitor/blob/master/LICENSE
 [3]: https://img.shields.io/github/release/d0u9/xfce4-system-monitor.svg
 [4]: https://github.com/d0u9/xfce4-system-monitor/releases/latest
 [5]: https://img.shields.io/github/downloads/d0u9/xfce4-system-monitor/total.svg?maxAge=33333
 [6]: https://github.com/d0u9/xfce4-system-monitor/releases
+[7]: https://api.travis-ci.org/d0u9/xfce4-system-monitor.svg?branch=master
+[8]: https://travis-ci.org/d0u9/xfce4-system-monitor
 
 ---
 
