@@ -7,7 +7,7 @@
 #define MAX_FREQ_STR_LEN        16
 #define CPU_SCALE               128
 
-typedef struct {
+struct cpu_core {
 	gulong user;
 	gulong nice;
 	gulong system;
@@ -24,17 +24,17 @@ typedef struct {
 	gulong used;
 	gulong load;
 	char   freq[MAX_FREQ_STR_LEN];
-} cpu_core_t;
+};
 
-typedef struct {
+struct cpu {
 	int core_num;
-	cpu_core_t total;
-	cpu_core_t *cpu_cores;
-} cpu_t;
+	struct cpu_core total;
+	struct cpu_core *cpu_cores;
+};
 
 
-extern int init_cpu(cpu_t *cpu);
-extern int update_cpu(cpu_t *cpu);
-extern void free_cpu(cpu_t *cpu);
+extern int init_cpu(struct cpu *cpu);
+extern int update_cpu(struct cpu *cpu);
+extern void free_cpu(struct cpu *cpu);
 
 #endif

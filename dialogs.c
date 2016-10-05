@@ -7,16 +7,16 @@
 #include "dialogs.h"
 
 void menu_about(XfcePanelPlugin *plugin);
-void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base);
+void menu_properties(XfcePanelPlugin *plugin, struct sys_monitor *base);
 
-static void cb_response(GtkWidget *dlg, gint response, sys_monitor_t *base);
-static void cb_update_interval(GtkComboBox *combo, sys_monitor_t *base);
-static void cb_set_font(GtkWidget *button, sys_monitor_t *base);
+static void cb_response(GtkWidget *dlg, gint response, struct sys_monitor *base);
+static void cb_update_interval(GtkComboBox *combo, struct sys_monitor *base);
+static void cb_set_font(GtkWidget *button, struct sys_monitor *base);
 
 static void setup_update_interval_option(GtkBox *vbox, GtkSizeGroup *sg,
-					 sys_monitor_t *base);
+					 struct sys_monitor *base);
 static void setup_font_selection(GtkBox *vbox, GtkSizeGroup *sg,
-				 sys_monitor_t *base);
+				 struct sys_monitor *base);
 static GtkBox *create_tab(void);
 static GtkWidget *create_drop_down(GtkBox *tab, GtkSizeGroup *sg,
 				   const gchar *name, const gchar **items,
@@ -25,19 +25,19 @@ static GtkBox *create_option_line(GtkBox *tab, GtkSizeGroup *sg,
 				  const gchar *name);
 
 /* This function is invoked when properties dialog close */
-static void cb_response(GtkWidget *dlg, gint response, sys_monitor_t *base)
+static void cb_response(GtkWidget *dlg, gint response, struct sys_monitor *base)
 {
 	gtk_widget_destroy(dlg);
 	xfce_panel_plugin_unblock_menu(base->plugin);
 	write_settings(base->plugin, base);
 }
 
-static void cb_update_interval(GtkComboBox *combo, sys_monitor_t *base)
+static void cb_update_interval(GtkComboBox *combo, struct sys_monitor *base)
 {
 	set_update_rate(base, gtk_combo_box_get_active(combo));
 }
 
-static void cb_set_font(GtkWidget *button, sys_monitor_t *base)
+static void cb_set_font(GtkWidget *button, struct sys_monitor *base)
 {
 	const gchar *font;
 	font = gtk_font_button_get_font_name(GTK_FONT_BUTTON(button));
@@ -69,7 +69,8 @@ static GtkBox *create_option_line(GtkBox *tab, GtkSizeGroup *sg, const gchar *na
 		gtk_misc_set_alignment(GTK_MISC(label), 0, 0.5);
 		gtk_size_group_add_widget(sg, label);
 		gtk_widget_show(label);
-		gtk_box_pack_start(GTK_BOX(line), GTK_WIDGET(label), FALSE, FALSE, 0);
+		gtk_box_pack_start(GTK_BOX(line), GTK_WIDGET(label),
+				   FALSE, FALSE, 0);
 	}
 
 	return line;
@@ -97,7 +98,7 @@ static GtkWidget *create_drop_down(GtkBox *tab, GtkSizeGroup *sg,
 }
 
 static void setup_update_interval_option(GtkBox *tab, GtkSizeGroup *sg,
-					 sys_monitor_t *base)
+					 struct sys_monitor *base)
 {
 	GtkWidget   *combo;
 	gsize       num_items;
@@ -115,7 +116,7 @@ static void setup_update_interval_option(GtkBox *tab, GtkSizeGroup *sg,
 }
 
 static void setup_font_selection(GtkBox *tab, GtkSizeGroup *sg,
-				 sys_monitor_t *base)
+				 struct sys_monitor *base)
 {
 	GtkWidget *button, *label;
 	GtkBox    *box;
@@ -136,7 +137,7 @@ static void setup_font_selection(GtkBox *tab, GtkSizeGroup *sg,
 	gtk_box_pack_start(GTK_BOX(box), button, FALSE, FALSE, 0);
 }
 
-void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base)
+void menu_properties(XfcePanelPlugin *plugin, struct sys_monitor *base)
 {
 	GtkWidget       *gw_conf;
 	GtkWidget       *gw_notebook;

@@ -9,24 +9,24 @@
 #include "sysmonitor.h"
 
 guint get_mseconds_by_level(enum interval level);
-void set_update_rate(sys_monitor_t *base, enum interval rate);
-void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
-int set_font(sys_monitor_t *sys_monitor, const char *font_name);
+void set_update_rate(struct sys_monitor *base, enum interval rate);
+void write_settings(XfcePanelPlugin *plugin, struct sys_monitor *base);
+int set_font(struct sys_monitor *sys_monitor, const char *font_name);
 
 static void system_monitor_construct(XfcePanelPlugin *plugin);
-static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base);
-static void create_layout(sys_monitor_t *base);
-static sys_monitor_t *alloc_memory(void);
-static sys_monitor_t *init_gui(XfcePanelPlugin *plugin);
-static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
-void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
+static void init_menu(XfcePanelPlugin *plugin, struct sys_monitor *base);
+static void create_layout(struct sys_monitor *base);
+static struct sys_monitor *alloc_memory(void);
+static struct sys_monitor *init_gui(XfcePanelPlugin *plugin);
+static void read_settings(XfcePanelPlugin *plugin, struct sys_monitor *base);
+void write_settings(XfcePanelPlugin *plugin, struct sys_monitor *base);
 
 /* register this plugin */
 XFCE_PANEL_PLUGIN_REGISTER(system_monitor_construct);
 
 static void system_monitor_construct(XfcePanelPlugin *plugin)
 {
-	sys_monitor_t *base = init_gui(plugin);
+	struct sys_monitor *base = init_gui(plugin);
 
 	g_signal_connect(G_OBJECT(plugin), "size-changed",
 			 G_CALLBACK(system_monitor_size_changed), NULL);
@@ -47,11 +47,11 @@ guint get_mseconds_by_level(enum interval level)
 	return update;
 }
 
-static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
+static struct sys_monitor * init_gui(XfcePanelPlugin *plugin)
 {
 	GtkOrientation orientation;
 	GtkWidget      *ebox, *hvbox;
-	sys_monitor_t  *base = NULL;
+	struct sys_monitor  *base = NULL;
 
 	base = alloc_memory();
 	base->plugin = plugin;
@@ -79,7 +79,7 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
 	update_cpu(&base->cpu);
 	update_sensor(&base->sensor);
 	update_sensor(&base->sensor);
-	core_s_t *core = NULL;
+	struct core_s *core = NULL;
 	core = max_temp_core(&base->sensor.cpu_list, core);
 
 	read_settings(plugin, base);
@@ -87,10 +87,10 @@ static sys_monitor_t * init_gui(XfcePanelPlugin *plugin)
 	return base;
 }
 
-static void create_layout(sys_monitor_t *base)
+static void create_layout(struct sys_monitor *base)
 {
 	GtkWidget *layout_table;
-	gui_t     *gui = &base->gui;
+	struct gui     *gui = &base->gui;
 
 	layout_table = gtk_table_new (3, 2, TRUE);
 	gtk_widget_show (layout_table);
@@ -101,7 +101,8 @@ static void create_layout(sys_monitor_t *base)
 
 	GtkWidget *uplink_speed_label = gtk_label_new(DEFAULT_UPLINK_DISPLAY);
 	gtk_misc_set_alignment(GTK_MISC(uplink_speed_label), 1, 1);
-	gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label), MAX_UPLINK_SPEED_LABEL_WIDTH);
+	gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label),
+				  MAX_UPLINK_SPEED_LABEL_WIDTH);
 	gtk_widget_show(uplink_speed_label);
 	gtk_label_set_width_chars(GTK_LABEL(uplink_speed_label),
 				  MAX_UPLINK_SPEED_LABEL_WIDTH);
@@ -111,7 +112,8 @@ static void create_layout(sys_monitor_t *base)
 
 	GtkWidget *downlink_speed_label = gtk_label_new(DEFAULT_DOWNLINK_DISPLAY);
 	gtk_misc_set_alignment(GTK_MISC(downlink_speed_label), 1, 1);
-	gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label), MAX_DOWNLINK_SPEED_LABEL_WIDTH);
+	gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label),
+				  MAX_DOWNLINK_SPEED_LABEL_WIDTH);
 	gtk_widget_show(downlink_speed_label);
 	gtk_label_set_width_chars(GTK_LABEL(downlink_speed_label),
 				  MAX_DOWNLINK_SPEED_LABEL_WIDTH);
@@ -138,13 +140,13 @@ static void create_layout(sys_monitor_t *base)
 	gui->cpu_sensor_label = cpu_sensor_label;
 }
 
-static sys_monitor_t *alloc_memory(void)
+static struct sys_monitor *alloc_memory(void)
 {
 	void *p[5] = {NULL};
 	int count = 0;
-	sys_monitor_t *base = NULL;
+	struct sys_monitor *base = NULL;
 
-	base = p[count++] = calloc(1, sizeof(sys_monitor_t));
+	base = p[count++] = calloc(1, sizeof(struct sys_monitor));
 	if (!base) goto error;
 
 	base->font = p[count++] = calloc(MAX_FONT_STR_LEN, 1);
@@ -167,7 +169,7 @@ error:
 	return NULL;
 }
 
-static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base)
+static void init_menu(XfcePanelPlugin *plugin, struct sys_monitor *base)
 {
 	xfce_panel_plugin_menu_show_about(plugin);
 	g_signal_connect(G_OBJECT(plugin), "about",
@@ -178,11 +180,11 @@ static void init_menu(XfcePanelPlugin *plugin, sys_monitor_t *base)
 			 G_CALLBACK(menu_properties), base);
 }
 
-int set_font(sys_monitor_t *sys_monitor, const char *font_name)
+int set_font(struct sys_monitor *sys_monitor, const char *font_name)
 {
 	PangoFontDescription *t_font = NULL;
-	gui_t *gui = &sys_monitor->gui;
-	// Regard gui_t struct as an array of pointer of GtkWidget
+	struct gui *gui = &sys_monitor->gui;
+	// Regard struct gui struct as an array of pointer of GtkWidget
 	// For the convenience of iteration.
 	GtkWidget **widget_array = (GtkWidget **)gui;
 
@@ -194,7 +196,7 @@ int set_font(sys_monitor_t *sys_monitor, const char *font_name)
 	if (!t_font)
 		return -1;
 
-	int num = (int)(sizeof(gui_t) / sizeof(GtkWidget *));
+	int num = (int)(sizeof(struct gui) / sizeof(GtkWidget *));
 	for (int i = 0; i < num; ++i) {
 		gtk_widget_modify_font(GTK_WIDGET(*(widget_array + i)), t_font);
 	}
@@ -203,7 +205,7 @@ int set_font(sys_monitor_t *sys_monitor, const char *font_name)
 	return 0;
 }
 
-void set_update_rate(sys_monitor_t *base, enum interval level)
+void set_update_rate(struct sys_monitor *base, enum interval level)
 {
 	guint update;
 
@@ -217,7 +219,7 @@ void set_update_rate(sys_monitor_t *base, enum interval level)
 	base->timer_id = g_timeout_add(update, (GtkFunction)timeout, base);
 }
 
-static void read_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
+static void read_settings(XfcePanelPlugin *plugin, struct sys_monitor *base)
 {
 	char *file = NULL;
 	const char *font = NULL;
@@ -246,7 +248,7 @@ setup:
 
 }
 
-void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base)
+void write_settings(XfcePanelPlugin *plugin, struct sys_monitor *base)
 {
 	char	*file = NULL;
 	XfceRc	*rc;

@@ -7,12 +7,12 @@
 #include "network.h"
 #include "sensor.h"
 
-typedef struct {
+struct gui {
 	GtkWidget *uplink_speed_label;
 	GtkWidget *dowlink_speed_label;
 	GtkWidget *cpu_usage_label;
 	GtkWidget *cpu_sensor_label;
-} gui_t;
+};
 
 enum interval {
 	level_1 = 0,
@@ -22,24 +22,24 @@ enum interval {
 	level_end
 };
 
-typedef struct {
+struct sys_monitor {
 	XfcePanelPlugin *plugin;
 	GtkWidget *ebox;
 	GtkWidget *hvbox;
 	GtkWidget *layout_table;
-	enum interval update_interval;
 	guint    timer_id;
-	gui_t    gui;
 	char     *font;
-	cpu_t    cpu;
-	net_t    net;
-	sensor_t sensor;
-} sys_monitor_t;
+	enum interval update_interval;
+	struct gui    gui;
+	struct cpu    cpu;
+	struct net    net;
+	struct sensor sensor;
+};
 
 extern guint get_mseconds_by_level(enum interval level);
-extern void set_update_rate(sys_monitor_t *base, enum interval rate);
-void write_settings(XfcePanelPlugin *plugin, sys_monitor_t *base);
-int set_font(sys_monitor_t *sys_monitor, const char *font_name);
+extern void set_update_rate(struct sys_monitor *base, enum interval rate);
+void write_settings(XfcePanelPlugin *plugin, struct sys_monitor *base);
+int set_font(struct sys_monitor *sys_monitor, const char *font_name);
 
 #define DEFAULT_FONT		"Sans 6"
 

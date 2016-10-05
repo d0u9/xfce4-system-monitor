@@ -7,8 +7,8 @@
 #include "sysmonitor.h"
 
 extern gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size);
-extern gboolean timeout(sys_monitor_t *base);
-extern void system_monitor_free(XfcePanelPlugin *plugin, sys_monitor_t *base);
+extern gboolean timeout(struct sys_monitor *base);
+extern void system_monitor_free(XfcePanelPlugin *plugin, struct sys_monitor *base);
 
 #endif
 

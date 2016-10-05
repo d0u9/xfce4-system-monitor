@@ -9,7 +9,7 @@ typedef struct {
 } properties_gui_t;
 
 extern void menu_about(XfcePanelPlugin *plugin);
-extern void menu_properties(XfcePanelPlugin *plugin, sys_monitor_t *base);
+extern void menu_properties(XfcePanelPlugin *plugin, struct sys_monitor *base);
 
 #define G_CONFIG_BORDER			10
 

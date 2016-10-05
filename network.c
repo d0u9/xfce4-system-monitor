@@ -10,32 +10,32 @@
 #define CARRIER_DIR     "/sys/class/net"
 #define PROC_NET_DEV    "/proc/net/dev"
 
-int init_net(net_t *net);
-int update_net(net_t *net);
-int free_net(net_t *net);
-int update_speed_str(net_t *net, int interval);
+int init_net(struct net *net);
+int update_net(struct net *net);
+int free_net(struct net *net);
+int update_speed_str(struct net *net, int interval);
 
 static struct speed calculate_speed(uint64_t old, uint64_t new, int interval);
-static net_dev_t *get_net_status(net_t *net);
+static struct net_dev *get_net_status(struct net *net);
 
-int init_net(net_t *net)
+int init_net(struct net *net)
 {
 	list_init(&net->dev_list);
 	return 0;
 }
 
-int update_net(net_t *net)
+int update_net(struct net *net)
 {
 	get_net_status(net);
 	return 0;
 }
 
-int free_net(net_t *net)
+int free_net(struct net *net)
 {
 	list_t *cur, *head = &net->dev_list;
 	list_for_each(cur, head) {
 		cur = list_remove(cur);
-		net_dev_t *dev = entry_of(cur, net_dev_t, list);
+		struct net_dev *dev = entry_of(cur, struct net_dev, list);
 		free(dev);
 	}
 	return 0;
@@ -87,7 +87,7 @@ static int get_net_link_status(const char *dev_name)
 }
 
 
-static net_dev_t *get_net_status(net_t *net)
+static struct net_dev *get_net_status(struct net *net)
 {
 	char line[MAX_FILE_LINE_LEN] = {0};
 	FILE *fp = NULL;
@@ -103,13 +103,13 @@ static net_dev_t *get_net_status(net_t *net)
 	fgets(line, MAX_FILE_LINE_LEN, fp);
 	memset(line, 0, MAX_FILE_LINE_LEN);
 	for (dev_num = 0; fgets(line, MAX_FILE_LINE_LEN, fp); dev_num++) {
-		net_dev_t *dev = NULL;
+		struct net_dev *dev = NULL;
 		if (cur->next == head) {
-			dev = (net_dev_t *)calloc(1, sizeof(net_dev_t));
+			dev = (struct net_dev*)calloc(1, sizeof(struct net_dev));
 			list_init(&dev->list);
 			list_add(cur, &dev->list);
 		} else {
-			dev = entry_of(cur->next, net_dev_t, list);
+			dev = entry_of(cur->next, struct net_dev, list);
 		}
 
 		dev->pre_data = dev->cur_data;
@@ -134,14 +134,14 @@ static net_dev_t *get_net_status(net_t *net)
 	}
 	list_for_each_continue_safe(cur, tmp, head) {
 		cur = list_remove(cur);
-		free(entry_of(cur, net_dev_t, list));
+		free(entry_of(cur, struct net_dev, list));
 	}
 
 	return NULL;
 }
 
 
-int update_speed_str(net_t *net, int interval)
+int update_speed_str(struct net *net, int interval)
 {
 	net->pre_data = net->cur_data;
 
@@ -150,8 +150,8 @@ int update_speed_str(net_t *net, int interval)
 	list_t *head = &net->dev_list, *cur = NULL;
 
 	list_for_each(cur, head) {
-		net_dev_t *dev = NULL;
-		dev = entry_of(cur, net_dev_t, list);
+		struct net_dev *dev = NULL;
+		dev = entry_of(cur, struct net_dev, list);
 		if (dev->online) {
 			net->cur_data.recv_pkgs  += dev->cur_data.recv_pkgs;
 			net->cur_data.recv_bytes += dev->cur_data.recv_bytes;

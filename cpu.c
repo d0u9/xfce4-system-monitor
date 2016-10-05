@@ -5,21 +5,21 @@
 #include "sysmonitor.h"
 #include "cpu.h"
 
-int init_cpu(cpu_t *cpu);
-int update_cpu(cpu_t *cpu);
-void free_cpu(cpu_t *cpu);
+int init_cpu(struct cpu *cpu);
+int update_cpu(struct cpu *cpu);
+void free_cpu(struct cpu *cpu);
 
 /* static function decalartion */
-static int calculate_cpu_usage(cpu_core_t *previous, cpu_core_t *core);
-static int get_cpu_usage(cpu_t *cpu);
-static int get_cpu_info(cpu_t *cpu);
+static int calculate_cpu_usage(struct cpu_core *previous, struct cpu_core *core);
+static int get_cpu_usage(struct cpu *cpu);
+static int get_cpu_info(struct cpu *cpu);
 static int get_cpu_core_num(void);
 
 /* macro definitation */
 #define PROC_STAT       "/proc/stat"
 #define PROC_CPUINFO    "/proc/cpuinfo"
 
-int update_cpu(cpu_t *cpu)
+int update_cpu(struct cpu *cpu)
 {
 	int ret1 = -1, ret2 = -1;
 	ret1 = get_cpu_usage(cpu);
@@ -31,16 +31,16 @@ int update_cpu(cpu_t *cpu)
 	return 0;
 }
 
-int init_cpu(cpu_t *cpu)
+int init_cpu(struct cpu *cpu)
 {
 	int core_num = 0;
-	cpu_core_t *cpu_cores = NULL;
+	struct cpu_core *cpu_cores = NULL;
 
 	if ((core_num = get_cpu_core_num()) < 1)
 		return -1;
 
 	cpu->core_num = core_num;
-	if (!(cpu_cores = calloc(core_num, sizeof(cpu_core_t)))) {
+	if (!(cpu_cores = calloc(core_num, sizeof(struct cpu_core)))) {
 		return -1;
 	}
 
@@ -49,14 +49,14 @@ int init_cpu(cpu_t *cpu)
 	return 0;
 }
 
-void free_cpu(cpu_t *cpu)
+void free_cpu(struct cpu *cpu)
 {
 	free(cpu->cpu_cores);
 }
 
-static int get_cpu_usage(cpu_t *cpu)
+static int get_cpu_usage(struct cpu *cpu)
 {
-	cpu_core_t      usage;
+	struct cpu_core      usage;
 	FILE *stat_file = NULL;
 	char line[MAX_FILE_LINE_LEN] = {0};
 
@@ -79,7 +79,7 @@ static int get_cpu_usage(cpu_t *cpu)
 			       &usage.irq, &usage.softirq);
 #endif
 			if (line_no == 0) {
-				cpu_core_t previous = cpu->total;
+				struct cpu_core previous = cpu->total;
 				cpu->total = usage;
 				if (calculate_cpu_usage(&previous, &cpu->total) < 0)
 					goto error;
@@ -87,7 +87,7 @@ static int get_cpu_usage(cpu_t *cpu)
 				continue;
 			}
 
-			cpu_core_t previous = cpu->cpu_cores[line_no - 1];
+			struct cpu_core previous = cpu->cpu_cores[line_no - 1];
 			cpu->cpu_cores[line_no - 1]  = usage;
 			if (calculate_cpu_usage(&previous,
 						&cpu->cpu_cores[line_no -1]) < 0)
@@ -107,9 +107,9 @@ error:
 
 }
 
-static int get_cpu_info(cpu_t *cpu)
+static int get_cpu_info(struct cpu *cpu)
 {
-	cpu_core_t *core = NULL;
+	struct cpu_core *core = NULL;
 	FILE  *cpuinfo_file = NULL;
 	int   core_index = -1;
 	char  line[MAX_FILE_LINE_LEN + 1] = {0};
@@ -162,7 +162,7 @@ static int get_cpu_core_num(void)
 #endif
 }
 
-static int calculate_cpu_usage(cpu_core_t *previous, cpu_core_t *core)
+static int calculate_cpu_usage(struct cpu_core *previous, struct cpu_core *core)
 {
 	gulong used = 0, total = 0;
 
