@@ -1,10 +1,10 @@
-CC = gcc
-M4 = m4
+export CC = gcc
+export M4 = m4
+export BUILD_DIR = build
 
 PROGRAM_NAME = sysmonitor
 BIN = $(PROGRAM_NAME)
 LIB = lib$(BIN).so
-BUILD_DIR = build
 M4_SCRIPT = configure.m4
 
 ICON = xfce4-system-monitor-plugin.png
@@ -27,6 +27,7 @@ release: build
 build: _PRE $(OUTS) $(BIN)
 
 $(BIN): $(OBJS)
+	make -C trilib
 	$(CC) $(DEBUG_FLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) -shared -o $(BUILD_DIR)/$(LIB) $^
 
 -include $(DEPS)

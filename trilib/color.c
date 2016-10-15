@@ -1,0 +1,35 @@
+#include "color.h"
+
+const char *end_of_color = COLOR_END;
+
+const char *fg_color_table[] = {
+	"",
+	COLOR_BLACK_STR,
+	COLOR_RED_STR,
+	COLOR_GREEN_STR,
+	COLOR_YELLOW_STR,
+	COLOR_BLUE_STR,
+	COLOR_PURPLE_STR,
+	COLOR_CYAN_STR,
+	COLOR_WHITE_STR,
+};
+
+const char *bg_color_table[] = {
+	"",
+	COLOR_ON_BLACK_STR,
+	COLOR_ON_RED_STR,
+	COLOR_ON_GREEN_STR,
+	COLOR_ON_YELLOW_STR,
+	COLOR_ON_BLUE_STR,
+	COLOR_ON_PURPLE_STR,
+	COLOR_ON_CYAN_STR,
+	COLOR_ON_WHITE_STR,
+};
+
+const char *font_style_table[] = {
+	COLOR_STYLE_NORMAL,
+	COLOR_BOLD_STR,
+	COLOR_UNDERLINE_STR,
+	COLOR_REVERSE_STR,
+	COLOR_CROSSLINE_STR,
+};
