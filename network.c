@@ -6,6 +6,7 @@
 
 #include "sysmonitor.h"
 #include "network.h"
+#include "trilib/log.h"
 
 #define CARRIER_DIR     "/sys/class/net"
 #define PROC_NET_DEV    "/proc/net/dev"
@@ -47,7 +48,7 @@ struct speed calculate_speed(uint64_t old, uint64_t new, int interval)
 	double value = (new - old) / (interval / 1000.0);
 
 	memset(&speed, 0, sizeof(struct speed));
-	g_print("-> speed = %f\n", value);
+	printl_debug("-> speed = %f\n", value);
 	if (value > CONST_Gi) {
 		speed.value = value / CONST_Gi;
 		strncpy(speed.unit, "GB/s ", 7);
@@ -136,7 +137,7 @@ static struct net_dev *get_net_status(struct net *net)
 
 	struct net_dev *tmp_entry;
 	struct net_dev *cur_entry = list_entry(cur, struct net_dev, list);
-	printf("%s\n", cur_entry->dev_name);
+	printl_debug("%s\n", cur_entry->dev_name);
 	list_for_each_entry_safe_from(cur_entry, tmp_entry, head, list) {
 		list_del(&cur_entry->list);
 		free(cur_entry);

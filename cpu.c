@@ -4,6 +4,7 @@
 
 #include "sysmonitor.h"
 #include "cpu.h"
+#include "trilib/log.h"
 
 int init_cpu(struct cpu *cpu);
 int update_cpu(struct cpu *cpu);
@@ -176,8 +177,8 @@ static int calculate_cpu_usage(struct cpu_core *previous, struct cpu_core *core)
 #endif
 
 	if ((total - previous->total) != 0) {
-		g_print("used = %lu, total = %lu\n",
-			used - previous->used, total - previous->total);
+		printl_debug("used = %lu, total = %lu\n",
+			     used - previous->used, total - previous->total);
 		core->load = (used - previous->used) * 10000
 			     / (total - previous->total);
 	} else {

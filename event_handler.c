@@ -3,6 +3,7 @@
 #include "event_handler.h"
 #include "cpu.h"
 #include "network.h"
+#include "trilib/log.h"
 
 gboolean system_monitor_size_changed(XfcePanelPlugin *plugin, gint size);
 gboolean timeout(struct sys_monitor *base);
@@ -32,7 +33,7 @@ gboolean timeout(struct sys_monitor *base)
 	/* update network */
 	update_net(&base->net);
 	update_speed_str(&base->net, get_mseconds_by_level(base->update_interval));
-	g_print("send = %s, recv = %s\n",
+	printl_debug("send = %s, recv = %s\n",
 		base->net.send_speed, base->net.recv_speed);
 	gtk_label_set_text(GTK_LABEL(base->gui.dowlink_speed_label),
 			   base->net.recv_speed);
@@ -44,11 +45,12 @@ gboolean timeout(struct sys_monitor *base)
 	struct core_s *core = NULL;
 	if ((core = max_temp_core(&base->sensor.cpu_list, core))) {
 		sprintf(str, "%.1f "STR_TEMPERATURE_SIGN, core->input / 1000.0f);
-		g_print("label = %s, %s\n", core->label, str);
+		printl_debug("label = %s, %s\n", core->label, str);
 		gtk_label_set_text(GTK_LABEL(base->gui.cpu_sensor_label), str);
 	}
 
-	g_print("Timeout !!!\n");
+	printl_debug("Timeout !!!\n");
+	printl_info("---------------------------\n");
 
 	return TRUE;
 }
