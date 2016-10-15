@@ -17,7 +17,7 @@ DEPS = $(OBJS:%.o=%.d)
 INS  = $(wildcard *.in)
 OUTS = $(INS:%.in=$(BUILD_DIR)/%)
 
-CFLAGS += -Wall -fPIC $(DEBUG_FLAGS) -std=c99 -I. -I$(BUILD_DIR)
+CFLAGS += -Wall -fPIC $(DEBUG_FLAGS) -std=gnu99 -I. -I$(BUILD_DIR)
 EXTRA_CFLAGS = `pkg-config --cflags libxfce4panel-1.0` `pkg-config --cflags libxfce4ui-1`
 EXTRA_LDFLAGS = `pkg-config --libs libxfce4panel-1.0` `pkg-config --libs libxfce4ui-1`
 
@@ -28,7 +28,7 @@ build: _PRE $(OUTS) $(BIN)
 
 $(BIN): $(OBJS)
 	make -C trilib
-	$(CC) $(DEBUG_FLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) -shared -o $(BUILD_DIR)/$(LIB) $^
+	$(CC) $(DEBUG_FLAGS) $(CFLAGS) $(EXTRA_CFLAGS) $(EXTRA_LDFLAGS) -shared -o $(BUILD_DIR)/$(LIB) $^ $(BUILD_DIR)/*.a
 
 -include $(DEPS)
 

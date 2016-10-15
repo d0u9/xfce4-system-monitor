@@ -1,12 +1,12 @@
 #ifndef __SENSOR_H
 #define __SENSOR_H
 
-#include "list.h"
+#include "trilib/list.h"
 
 #define MAX_CPU_LABEL_LEN	32
 
 struct core_s {
-	list_t  list;
+	struct list_head list;
 	int  index;
 	int  input;
 	int  crit;
@@ -16,21 +16,22 @@ struct core_s {
 };
 
 struct cpu_s {
-	list_t list;
-	list_t core_list;
-	list_t *cur_core;
+	struct list_head list;
+	struct list_head core_list;
+	struct list_head *cur_core;
 	int    index;
 };
 
 struct sensor {
-	list_t cpu_list;
-	list_t *cur_cpu;
+	struct list_head cpu_list;
+	struct list_head *cur_cpu;
 };
 
 
 extern int init_sensor(struct sensor *sensor);
 extern int update_sensor(struct sensor *sensor);
 extern void free_sensor(struct sensor *sensor);
-extern struct core_s *max_temp_core(list_t *cpu_list, struct core_s *ret);
+extern
+struct core_s *max_temp_core(struct list_head *cpu_list, struct core_s *ret);
 
 #endif

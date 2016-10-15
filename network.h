@@ -5,7 +5,7 @@
 #define MAX_SPEED_STR_LEN	32
 
 #include <stdint.h>
-#include "list.h"
+#include "trilib/list.h"
 
 struct net_data {
 	uint64_t recv_bytes;
@@ -15,7 +15,7 @@ struct net_data {
 };
 
 struct net_dev {
-	list_t list;
+	struct list_head list;
 	char   dev_name[MAX_DEV_NAME_LEN];
 	int    online;
 	struct net_data cur_data;
@@ -29,7 +29,7 @@ struct net {
 	char send_speed[MAX_SPEED_STR_LEN];
 	struct net_data cur_data;
 	struct net_data pre_data;
-	list_t dev_list;
+	struct list_head dev_list;
 };
 
 struct speed {

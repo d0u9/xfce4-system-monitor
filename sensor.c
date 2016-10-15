@@ -19,7 +19,7 @@
 int init_sensor(struct sensor *sensor);
 int update_sensor(struct sensor *sensor);
 void free_sensor(struct sensor *sensor);
-struct core_s *max_temp_core(list_t *cpu_list, struct core_s *ret);
+struct core_s *max_temp_core(struct list_head *cpu_list, struct core_s *ret);
 
 // axuiliary functions
 static int get_first_line(const char *file, char *buf, int len);
@@ -34,11 +34,11 @@ static int process_valid_dir(const char *path, struct sensor *sensor);
 
 // CPU
 static int get_cpu_temp(const char *path, struct sensor *sensor);
-static void free_cpu_s_list(list_t *cpu_list);
+static void free_cpu_s_list(struct list_head *cpu_list);
 static int get_core_temp(const char *path, struct cpu_s *cpu);
 static int parse_core_temp_dir(const char *file, struct core_s *core,
 			       const char *suffix);
-static void free_core_s_list(list_t *core_list);
+static void free_core_s_list(struct list_head *core_list);
 
 static int get_first_line(const char *file, char *buf, int len)
 {
@@ -147,12 +147,12 @@ static int get_core_temp(const char *path, struct cpu_s *cpu)
 			if (cpu->cur_core->next == &cpu->core_list) {
 				core = (struct core_s*)
 					calloc(1, sizeof(struct core_s));
-				list_init(&core->list);
-				list_add(cpu->cur_core, &core->list);
+				INIT_LIST_HEAD(&core->list);
+				list_add(&core->list, cpu->cur_core);
 				cpu->cur_core = &core->list;
 			} else {
 				cpu->cur_core = cpu->cur_core->next;
-				core = entry_of(cpu->cur_core, struct core_s, list);
+				core = list_entry(cpu->cur_core, struct core_s, list);
 			}
 			core->index = new_index;
 			current_index = new_index;
@@ -172,14 +172,14 @@ static int get_cpu_temp(const char *path, struct sensor *sensor)
 	if (sensor->cur_cpu->next == &sensor->cpu_list) {
 		struct cpu_s *cpu = (struct cpu_s*)
 			calloc(1, sizeof(struct cpu_s));
-		list_init(&cpu->list);
-		list_init(&cpu->core_list);
-		list_add(sensor->cur_cpu, &cpu->list);
+		INIT_LIST_HEAD(&cpu->list);
+		INIT_LIST_HEAD(&cpu->core_list);
+		list_add(&cpu->list, sensor->cur_cpu);
 		sensor->cur_cpu = &cpu->list;
 	} else {
 		sensor->cur_cpu = sensor->cur_cpu->next;
 	}
-	get_core_temp(path, entry_of(sensor->cur_cpu, struct cpu_s, list));
+	get_core_temp(path, list_entry(sensor->cur_cpu, struct cpu_s, list));
 
 	// TODO: free remaining nodes;
 
@@ -228,32 +228,32 @@ out:
 	return 0;
 }
 
-static void free_core_s_list(list_t *core_list)
+static void free_core_s_list(struct list_head *core_list)
 {
-	list_t *cur, *tmp, *head;
+	struct list_head *cur, *tmp, *head;
 	head = core_list;
 	struct core_s *core;
 	list_for_each_safe(cur, tmp, head) {
-		cur = list_remove(cur);
-		core = entry_of(cur, struct core_s, list);
+		core = list_entry(cur, struct core_s, list);
+		list_del(cur);
 		free(core);
 	}
 }
 
-static void free_cpu_s_list(list_t *cpu_list)
+static void free_cpu_s_list(struct list_head *cpu_list)
 {
-	list_t *cur, *tmp, *head;
+	struct list_head *cur, *tmp, *head;
 	head = cpu_list;
 	struct cpu_s *cpu;
 	list_for_each_safe(cur, tmp, head) {
-		cpu = entry_of(cur, struct cpu_s, list);
+		cpu = list_entry(cur, struct cpu_s, list);
 		free_core_s_list(&cpu->core_list);
 	}
 }
 
 int init_sensor(struct sensor *sensor)
 {
-	list_init(&sensor->cpu_list);
+	INIT_LIST_HEAD(&sensor->cpu_list);
 	reset_sensor_cursor(sensor);
 
 	return 0;
@@ -271,17 +271,17 @@ int update_sensor(struct sensor *sensor)
 	return parse_hwmon(SYS_HWMON, sensor);
 }
 
-struct core_s *max_temp_core(list_t *cpu_list, struct core_s *ret)
+struct core_s *max_temp_core(struct list_head *cpu_list, struct core_s *ret)
 {
-	list_t *cur_cpu, *head_cpu, *cur_core, *head_core;
+	struct list_head *cur_cpu, *head_cpu, *cur_core, *head_core;
 	ret = NULL;
 	int max = 0;
 	head_cpu = cpu_list;
 	list_for_each(cur_cpu, head_cpu) {
-		head_core = &(entry_of(cur_cpu, struct cpu_s, list)->core_list);
+		head_core = &(list_entry(cur_cpu, struct cpu_s, list)->core_list);
 		list_for_each(cur_core, head_core) {
-			if (entry_of(cur_core, struct core_s, list)->input >= max) {
-				ret = entry_of(cur_core, struct core_s, list);
+			if (list_entry(cur_core, struct core_s, list)->input >= max) {
+				ret = list_entry(cur_core, struct core_s, list);
 				max = ret->input;
 			}
 		}

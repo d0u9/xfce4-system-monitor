@@ -20,7 +20,7 @@ static struct net_dev *get_net_status(struct net *net);
 
 int init_net(struct net *net)
 {
-	list_init(&net->dev_list);
+	INIT_LIST_HEAD(&net->dev_list);
 	return 0;
 }
 
@@ -32,10 +32,10 @@ int update_net(struct net *net)
 
 int free_net(struct net *net)
 {
-	list_t *cur, *head = &net->dev_list;
+	struct list_head *cur, *head = &net->dev_list;
 	list_for_each(cur, head) {
-		cur = list_remove(cur);
-		struct net_dev *dev = entry_of(cur, struct net_dev, list);
+		struct net_dev *dev = list_entry(cur, struct net_dev, list);
+		list_del(cur);
 		free(dev);
 	}
 	return 0;
@@ -92,7 +92,7 @@ static struct net_dev *get_net_status(struct net *net)
 	char line[MAX_FILE_LINE_LEN] = {0};
 	FILE *fp = NULL;
 	int  online_num = 0, dev_num = 0;
-	list_t *head, *cur, *tmp;
+	struct list_head *head, *cur;
 
 	cur = head = &net->dev_list;
 
@@ -106,10 +106,10 @@ static struct net_dev *get_net_status(struct net *net)
 		struct net_dev *dev = NULL;
 		if (cur->next == head) {
 			dev = (struct net_dev*)calloc(1, sizeof(struct net_dev));
-			list_init(&dev->list);
-			list_add(cur, &dev->list);
+			INIT_LIST_HEAD(&dev->list);
+			list_add(&dev->list, cur);
 		} else {
-			dev = entry_of(cur->next, struct net_dev, list);
+			dev = list_entry(cur->next, struct net_dev, list);
 		}
 
 		dev->pre_data = dev->cur_data;
@@ -132,9 +132,14 @@ static struct net_dev *get_net_status(struct net *net)
 		net->online_num = online_num;
 		net->dev_num = dev_num;
 	}
-	list_for_each_continue_safe(cur, tmp, head) {
-		cur = list_remove(cur);
-		free(entry_of(cur, struct net_dev, list));
+
+
+	struct net_dev *tmp_entry;
+	struct net_dev *cur_entry = list_entry(cur, struct net_dev, list);
+	printf("%s\n", cur_entry->dev_name);
+	list_for_each_entry_safe_from(cur_entry, tmp_entry, head, list) {
+		list_del(&cur_entry->list);
+		free(cur_entry);
 	}
 
 	return NULL;
@@ -147,11 +152,11 @@ int update_speed_str(struct net *net, int interval)
 
 	memset(&net->cur_data, 0, sizeof(net->cur_data));
 
-	list_t *head = &net->dev_list, *cur = NULL;
+	struct list_head *head = &net->dev_list, *cur = NULL;
 
 	list_for_each(cur, head) {
 		struct net_dev *dev = NULL;
-		dev = entry_of(cur, struct net_dev, list);
+		dev = list_entry(cur, struct net_dev, list);
 		if (dev->online) {
 			net->cur_data.recv_pkgs  += dev->cur_data.recv_pkgs;
 			net->cur_data.recv_bytes += dev->cur_data.recv_bytes;

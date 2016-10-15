@@ -13,17 +13,15 @@ SRCS = $(wildcard *.c)
 OBJS = $(SRCS:%.c=$(BUILD_DIR)/%.o)
 DEPS = $(OBJS:%.o=%.d)
 
--include $(DEPS)
-
 debug: DEBUG_FLAGS = -g -O -DDEBUG
 debug: build
+
+-include $(DEPS)
 
 build: _PRE $(BIN)
 
 $(BIN): $(OBJS)
 	ar -cvq $(BIN) $^
-
-
 
 $(BUILD_DIR)/%.o: %.c
 	$(CC) $(DEBUG_FLAGS) $(CFLAGS) -MMD -c -o $@ $<

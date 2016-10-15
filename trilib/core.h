@@ -16,7 +16,9 @@ typedef int16_t		s16;
 typedef int32_t		s32;
 typedef int64_t		s64;
 
+#undef TRUE
 #define TRUE		(1 == 1)
+#undef FALSE
 #define FALSE		(1 == 0)
 
 #define U8_MAX		((u8)~0U)
